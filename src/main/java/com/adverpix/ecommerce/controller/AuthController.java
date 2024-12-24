@@ -51,7 +51,7 @@ public class AuthController {
         newUser.setLastName(registerUser.getLastName());
 
         userRepository.save(newUser);
-        return ResponseEntity.ok("User Registered Successfully");
+        return ResponseEntity.status(HttpStatus.CREATED).body("User Registered Successfully");
     }
 
     // login API
