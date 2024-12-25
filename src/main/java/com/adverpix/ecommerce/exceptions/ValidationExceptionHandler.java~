@@ -1,0 +1,4 @@
+package com.adverpix.ecommerce.exceptions;
+
+public class ValidationExceptionHandler {
+}
