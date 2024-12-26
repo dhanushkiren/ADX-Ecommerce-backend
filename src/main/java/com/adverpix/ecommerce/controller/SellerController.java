@@ -1,5 +1,4 @@
 package com.adverpix.ecommerce.controller;
-
 import com.adverpix.ecommerce.models.Seller;
 import com.adverpix.ecommerce.services.SellerService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +15,16 @@ public class SellerController {
     @Autowired
     private SellerService sellerService;
 
+    @PostMapping("/login")
+    public ResponseEntity<String> loginSeller(@RequestParam String email, @RequestParam String password) {
+        boolean isAuthenticated = sellerService.authenticateSeller(email, password);
+        if (isAuthenticated) {
+            return ResponseEntity.ok("Login successful!");
+        } else {
+            return ResponseEntity.status(401).body("Invalid email or password.");
+        }
+    }
+
     @GetMapping
     public List<Seller> getAllSellers() {
         return sellerService.getAllSellers();
@@ -28,8 +37,9 @@ public class SellerController {
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-    @PostMapping
+    @PostMapping("/register")
     public Seller createSeller(@RequestBody Seller seller) {
+
         return sellerService.createSeller(seller);
     }
 

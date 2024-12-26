@@ -1,4 +1,5 @@
 package com.adverpix.ecommerce.services;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import com.adverpix.ecommerce.models.Seller;
 import com.adverpix.ecommerce.Repository.SellerRepository;
@@ -14,6 +15,17 @@ public class SellerService {
     @Autowired
     private SellerRepository sellerRepository;
 
+    private BCryptPasswordEncoder passwordEncoder;
+
+    public boolean authenticateSeller(String email, String password) {
+        Seller seller = sellerRepository.findByEmail(email);//Returns a seller by email(Unique value)
+        if (seller != null) {
+            // Here we encrypt the plain text and check if the encrypted text is equal to the hashed password
+            return passwordEncoder.matches(password, seller.getPassword());//Returns true if the password is correct
+        }
+        return false;
+    }
+
     public List<Seller> getAllSellers() {
         return sellerRepository.findAll();//Returns a list of all the sellers
     }
@@ -23,6 +35,8 @@ public class SellerService {
     }
 
     public Seller createSeller(Seller seller) {
+        String encryptedPassword = passwordEncoder.encode(seller.getPassword());//Encrypts the password(WE use BCrypt to encrypt the password)
+        seller.setPassword(encryptedPassword);//Sets the encrypted password
         return sellerRepository.save(seller);//creates a new seller
     }
 

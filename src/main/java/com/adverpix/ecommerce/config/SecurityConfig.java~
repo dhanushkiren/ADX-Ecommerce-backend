@@ -1,0 +1,4 @@
+package com.adverpix.ecommerce.config;
+
+public class SecurityConfig {
+}

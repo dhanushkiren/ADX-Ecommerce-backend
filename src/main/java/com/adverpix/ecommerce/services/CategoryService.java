@@ -1,5 +1,5 @@
 package com.adverpix.ecommerce.services;
-
+import com.adverpix.ecommerce.Repository.SellerRepository;
 import com.adverpix.ecommerce.models.Category;
 import com.adverpix.ecommerce.Repository.CategoryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +13,7 @@ public class CategoryService {
 
     @Autowired
     private CategoryRepository categoryRepository;
+    private SellerRepository sellerRepository;
 
     public List<Category> getAllCategories() {
         return categoryRepository.findAll();//get all categories
@@ -23,7 +24,10 @@ public class CategoryService {
     }
 
     public Category createCategory(Category category) {
-        return categoryRepository.save(category);//create a new category
+        if(sellerRepository.existsById(category.getSeller().getSeller_id())){ //Check if the Seller exists
+            return categoryRepository.save(category);//create a new category only if the seller exists
+        }
+        throw new RuntimeException("Invalid seller ID.");
     }
 
     public Category updateCategory(int id, Category categoryDetails) {

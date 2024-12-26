@@ -1,5 +1,6 @@
 package com.adverpix.ecommerce.services;
-
+import com.adverpix.ecommerce.Repository.SellerRepository;
+import com.adverpix.ecommerce.Repository.CategoryRepository;
 import com.adverpix.ecommerce.models.Product;
 import com.adverpix.ecommerce.Repository.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +15,10 @@ public class ProductService {
     @Autowired
     private ProductRepository productRepository;
 
+    private CategoryRepository categoryRepository;
+
+    private SellerRepository sellerRepository;
+
     public List<Product> getAllProducts() {
         return productRepository.findAll();// get all products
     }
@@ -23,7 +28,12 @@ public class ProductService {
     }
 
     public Product createProduct(Product product) {
-        return productRepository.save(product);// create product
+        if (categoryRepository.existsById(product.getCategory().getCategory_id()) &&
+                sellerRepository.existsById(product.getSeller().getSeller_id())) {// Check if the category and seller exist
+
+            return productRepository.save(product);//create a new product only if the category and seller exist
+        }
+        throw new RuntimeException("Invalid category or seller ID.");
     }
 
     public Product updateProduct(int id, Product productDetails) {
