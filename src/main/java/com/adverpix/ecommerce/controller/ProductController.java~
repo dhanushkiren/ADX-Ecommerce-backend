@@ -3,7 +3,6 @@ package com.adverpix.ecommerce.controller;
 import com.adverpix.ecommerce.models.Product;
 import com.adverpix.ecommerce.services.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -15,74 +14,33 @@ import java.util.Optional;
 public class ProductController {
 
     @Autowired
-    private ProductService productService; // This line is used to access the business logic in the service
+    private ProductService productService;
 
-    // Create a new product
-    @PostMapping("/save")//Create a new product
-    public ResponseEntity<Product> createProduct(@RequestBody Product product) { // This line is used to access the request body
-        try {
-            Product createdProduct = productService.createProduct(product);//Check if the category and seller exist
-            return new ResponseEntity<>(createdProduct, HttpStatus.CREATED);
-        } catch (Exception e) {
-            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
-        }
+    @GetMapping
+    public List<Product> getAllProducts() {
+        return productService.getAllProducts();
     }
 
-    // Get all products
-    @GetMapping("/fetchProducts")//Get all products(Read)
-    public ResponseEntity<List<Product>> getAllProducts() {
-        List<Product> products = productService.getAllProducts();//get all the products from the database
-        return new ResponseEntity<>(products, HttpStatus.OK);
+    @GetMapping("/{id}")
+    public ResponseEntity<Product> getProductById(@PathVariable int id) {
+        Optional<Product> product = productService.getProductById(id);
+        return product.map(ResponseEntity::ok)
+                .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-    // Get product by ID
-    @GetMapping("/{id}")//Get product by ID(Read by ID)
-    public ResponseEntity<Product> getProductById(@PathVariable("id") int id) { // This line is used to access the path variable and this @PathVariable is used to extract the ID
-        Optional<Product> product = productService.getProductById(id);//get the product from the database using the ID
-        return product.map(p -> new ResponseEntity<>(p, HttpStatus.OK)) // If the product is found, return it
-                .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND)); // If the product is not found, return a 404 status
+    @PostMapping
+    public Product createProduct(@RequestBody Product product) {
+        return productService.createProduct(product);
     }
 
-    // Update an existing product
-    @PutMapping("/{id}") //Update an existing product(Update by ID)
-    public ResponseEntity<Product> updateProduct(@PathVariable("id") int id, @RequestBody Product updatedProduct) {//This line is used to access the request body and @RequestBody is used to extract the updated product
-        try {
-            Product product = productService.updateProduct(id, updatedProduct); //Update the product
-            return new ResponseEntity<>(product, HttpStatus.OK);
-        } catch (Exception e) {
-            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
-        }
+    @PutMapping("/{id}")
+    public ResponseEntity<Product> updateProduct(@PathVariable int id, @RequestBody Product product) {
+        Product updatedProduct = productService.updateProduct(id, product);
+        return updatedProduct != null ? ResponseEntity.ok(updatedProduct) : ResponseEntity.notFound().build();
     }
 
-    // Delete product by ID
     @DeleteMapping("/{id}")
-    public ResponseEntity<HttpStatus> deleteProduct(@PathVariable("id") int id) {
-        try {
-            productService.deleteProduct(id);
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-        } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
+    public void deleteProduct(@PathVariable int id) {
+        productService.deleteProduct(id);
     }
-    //Get the products by name
-    @GetMapping("/name/{name}")
-    public ResponseEntity<List<Product>> findByName(@PathVariable("name") String name) {
-        List<Product> products = productService.findByName(name);
-        return new ResponseEntity<>(products, HttpStatus.OK);
-    }
-
-    // Get products by category
-    @GetMapping("/category/{categoryId}")
-    public ResponseEntity<List<Product>> getProductsByCategory(@PathVariable("categoryId") int categoryId) {
-        List<Product> products = productService.getProductsByCategory(categoryId);
-        return new ResponseEntity<>(products, HttpStatus.OK);
-    }
-
-    // Get products by seller
-    @GetMapping("/seller/{sellerId}")
-    public ResponseEntity<List<Product>> getProductsBySeller(@PathVariable("sellerId") int sellerId) {
-        List<Product> products = productService.getProductsBySeller(sellerId);
-        return new ResponseEntity<>(products, HttpStatus.OK);
-    }
-
 }
