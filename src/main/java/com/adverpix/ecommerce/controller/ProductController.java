@@ -63,25 +63,6 @@ public class ProductController {
         ProductSummaryDTO productSummary = productService.getProductSummaryById(id);
         return ResponseEntity.ok(productSummary);
     }
-  //Abinesh
-    private static List<Product> productList = new ArrayList<>();
 
-    static {
-        productList.add(new Product(1, "Phone", 15000, "Electronics", "BrandA", 4.5, true));
-        productList.add(new Product(2, "Laptop", 55000, "Electronics", "BrandB", 4.7, true));
-        productList.add(new Product(3, "Shirt", 1500, "Fashion", "BrandC", 4.2, true));
-        productList.add(new Product(4, "Shoes", 2000, "Fashion", "BrandD", 4.0, false));
-    }
-    @GetMapping("/filterlessget")
-    public List<Product> getAllProducts(
-            @RequestParam(required = false) String sortBy,
-            @RequestParam(required = false) String category,
-            @RequestParam(required = false) Double minPrice,
-            @RequestParam(required = false) Double maxPrice) {
-        if (sortBy == null && category == null && minPrice == null && maxPrice == null) {
-            return productService.getAllProducts();
-        }
-        return productService.filterAndSortProducts(sortBy, category, minPrice, maxPrice);
-    }
 }
 

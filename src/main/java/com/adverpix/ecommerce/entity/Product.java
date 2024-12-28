@@ -1,7 +1,7 @@
 package com.adverpix.ecommerce.entity;
 
 import jakarta.persistence.*;
-//Product-/-Category-/-Seller
+
 import lombok.Data;
 
 @Data

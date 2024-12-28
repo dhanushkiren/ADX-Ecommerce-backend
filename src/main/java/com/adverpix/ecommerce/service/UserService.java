@@ -1,7 +1,7 @@
 package com.adverpix.ecommerce.service;
 
 import com.adverpix.ecommerce.entity.User;
-import com.adverpix.ecommerce.Repository.UserRepository;
+import com.adverpix.ecommerce.repository.UserRepository;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;

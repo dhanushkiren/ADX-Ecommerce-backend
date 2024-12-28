@@ -1,7 +1,7 @@
 package com.adverpix.ecommerce.utils;
 
 import com.adverpix.ecommerce.entity.User;
-import com.adverpix.ecommerce.Repository.UserRepository;
+import com.adverpix.ecommerce.repository.UserRepository;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.stereotype.Component;
@@ -9,7 +9,6 @@ import org.springframework.stereotype.Component;
 import javax.crypto.SecretKey;
 import java.util.Date;
 import java.util.Optional;
-import java.util.Set;
 
 @Component
 public class JwtUtils {

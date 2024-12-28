@@ -1,4 +1,4 @@
-package com.adverpix.ecommerce.Repository;
+package com.adverpix.ecommerce.repository;
 
 import com.adverpix.ecommerce.entity.Seller;
 import org.springframework.data.jpa.repository.JpaRepository;

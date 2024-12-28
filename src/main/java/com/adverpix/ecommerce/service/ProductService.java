@@ -2,9 +2,9 @@ package com.adverpix.ecommerce.service;// This file is used to handle the busine
 
 import com.adverpix.ecommerce.dto.ProductSummaryDTO;// This file is used to handle the product summary
 import com.adverpix.ecommerce.entity.Product;
-import com.adverpix.ecommerce.Repository.ProductRepository;
-import com.adverpix.ecommerce.Repository.CategoryRepository;
-import com.adverpix.ecommerce.Repository.SellerRepository;
+import com.adverpix.ecommerce.repository.ProductRepository;
+import com.adverpix.ecommerce.repository.CategoryRepository;
+import com.adverpix.ecommerce.repository.SellerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;// This file is used to handle the business logic
 import org.springframework.web.multipart.MultipartFile;//This file is used to upload images
@@ -15,7 +15,6 @@ import java.nio.file.Path; // This file is used to handle the single path
 import java.nio.file.Paths; // this file is used to handle the multiple path of the files
 import java.util.List;
 
-import org.springframework.data.domain.Sort;//Abinesh
 @Service
 public class ProductService {
 
@@ -95,11 +94,7 @@ public class ProductService {
     public ProductSummaryDTO getProductSummaryById(int id) {//Get product summary by id using the dto
         return productRepository.findProductSummaryById(id);
     }
-  //Abinesh
-    public interface ProductService {
-    List<Product> getAllProducts(); // Keep this existing method
 
-    List<Product> filterAndSortProducts(String sortBy, String category, Double minPrice, Double maxPrice);
-    }
+
 }
 
