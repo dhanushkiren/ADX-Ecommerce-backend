@@ -1,6 +1,6 @@
-package com.adverpix.ecommerce.services;
+package com.adverpix.ecommerce.service;
 import com.adverpix.ecommerce.Repository.SellerRepository;
-import com.adverpix.ecommerce.models.Category;
+import com.adverpix.ecommerce.entity.Category;
 import com.adverpix.ecommerce.Repository.CategoryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

@@ -1,6 +1,6 @@
 package com.adverpix.ecommerce.controller;
-import com.adverpix.ecommerce.models.Seller;
-import com.adverpix.ecommerce.services.SellerService;
+import com.adverpix.ecommerce.entity.Seller;
+import com.adverpix.ecommerce.service.SellerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

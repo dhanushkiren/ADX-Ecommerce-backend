@@ -1,7 +1,7 @@
-package com.adverpix.ecommerce.services;
+package com.adverpix.ecommerce.service;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
-import com.adverpix.ecommerce.models.Seller;
+import com.adverpix.ecommerce.entity.Seller;
 import com.adverpix.ecommerce.Repository.SellerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

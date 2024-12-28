@@ -1,7 +1,7 @@
 package com.adverpix.ecommerce.controller;
 
-import com.adverpix.ecommerce.models.Category;
-import com.adverpix.ecommerce.services.CategoryService;
+import com.adverpix.ecommerce.entity.Category;
+import com.adverpix.ecommerce.service.CategoryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

@@ -4,7 +4,7 @@ import com.adverpix.ecommerce.dto.LoginDto;
 import com.adverpix.ecommerce.dto.RegisterDto;
 import com.adverpix.ecommerce.entity.User;
 import com.adverpix.ecommerce.exception.CustomException;
-import com.adverpix.ecommerce.repository.UserRepository;
+import com.adverpix.ecommerce.Repository.UserRepository;
 import com.adverpix.ecommerce.utils.JwtUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

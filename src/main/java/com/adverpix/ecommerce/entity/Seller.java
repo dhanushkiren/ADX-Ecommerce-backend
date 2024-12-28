@@ -1,4 +1,4 @@
-package com.adverpix.ecommerce.models;
+package com.adverpix.ecommerce.entity;
 
 import jakarta.persistence.*;
 import java.util.List;
