@@ -11,7 +11,6 @@ import java.util.List;
 public interface ProductRepository extends JpaRepository<Product, Integer> {
     @Query("SELECT new com.adverpix.ecommerce.dto.ProductSummaryDTO(p.name, p.price, p.ratingCount, p.imageUrl, p.stock, p.numberOfReviews) FROM Product p")
     List<ProductSummaryDTO> findProductSummaries();
-    @Query("SELECT new com.adverpix.ecommerce.dto.ProductSummaryDTO(p.name, p.price, p.ratingCount, p.imageUrl, p.stock, p.numberOfReviews) FROM Product p WHERE p.id = :id")
-    ProductSummaryDTO findProductSummaryById(Integer id);
-
+    @Query("SELECT new com.adverpix.ecommerce.dto.ProductSummaryDTO(p.name, p.price, p.ratingCount, p.imageUrl, p.stock, p.numberOfReviews) FROM Product p WHERE p.category.id = :categoryId")
+    List<ProductSummaryDTO> findProductSummariesByCategory(Integer categoryId);
 }
