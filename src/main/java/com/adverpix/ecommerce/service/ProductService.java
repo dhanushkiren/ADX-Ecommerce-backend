@@ -15,6 +15,7 @@ import java.nio.file.Path; // This file is used to handle the single path
 import java.nio.file.Paths; // this file is used to handle the multiple path of the files
 import java.util.List;
 
+import org.springframework.data.domain.Sort;//Abinesh
 @Service
 public class ProductService {
 
@@ -94,4 +95,11 @@ public class ProductService {
     public ProductSummaryDTO getProductSummaryById(int id) {//Get product summary by id using the dto
         return productRepository.findProductSummaryById(id);
     }
+  //Abinesh
+    public interface ProductService {
+    List<Product> getAllProducts(); // Keep this existing method
+
+    List<Product> filterAndSortProducts(String sortBy, String category, Double minPrice, Double maxPrice);
+    }
 }
+

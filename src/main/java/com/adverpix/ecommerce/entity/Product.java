@@ -1,6 +1,7 @@
 package com.adverpix.ecommerce.entity;
 
 import jakarta.persistence.*;
+//Product-/-Category-/-Seller
 import lombok.Data;
 
 @Data
@@ -11,7 +12,7 @@ public class Product {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
-
+//Product-/-Category-/-Seller
     private String name;
     private String description;
     private int price;
@@ -23,6 +24,9 @@ public class Product {
     private String sellerName;
     private int stock;
     private int numberOfReviews;
+    private String brand;
+    private double rating;
+    private boolean availability;
 
     @ManyToOne
     @JoinColumn(name = "category")
@@ -31,4 +35,5 @@ public class Product {
     @ManyToOne
     @JoinColumn(name = "seller")
     private Seller seller;
+
 }
