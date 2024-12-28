@@ -1,13 +1,13 @@
 package com.adverpix.ecommerce.controller;
-//Product-/-Category-/-Seller
+
 import com.adverpix.ecommerce.dto.ProductSummaryDTO;
 import com.adverpix.ecommerce.entity.Product;
 import com.adverpix.ecommerce.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;// this import is to handle the HTTP status codes
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;// this import is used to handle the multipart file
+import org.springframework.web.bind.annotation.*;// this import is used to 
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
@@ -63,25 +63,4 @@ public class ProductController {
         ProductSummaryDTO productSummary = productService.getProductSummaryById(id);
         return ResponseEntity.ok(productSummary);
     }
-  //Abinesh
-    private static List<Product> productList = new ArrayList<>();
-
-    static {
-        productList.add(new Product(1, "Phone", 15000, "Electronics", "BrandA", 4.5, true));
-        productList.add(new Product(2, "Laptop", 55000, "Electronics", "BrandB", 4.7, true));
-        productList.add(new Product(3, "Shirt", 1500, "Fashion", "BrandC", 4.2, true));
-        productList.add(new Product(4, "Shoes", 2000, "Fashion", "BrandD", 4.0, false));
-    }
-    @GetMapping("/filterlessget")
-    public List<Product> getAllProducts(
-            @RequestParam(required = false) String sortBy,
-            @RequestParam(required = false) String category,
-            @RequestParam(required = false) Double minPrice,
-            @RequestParam(required = false) Double maxPrice) {
-        if (sortBy == null && category == null && minPrice == null && maxPrice == null) {
-            return productService.getAllProducts();
-        }
-        return productService.filterAndSortProducts(sortBy, category, minPrice, maxPrice);
-    }
 }
-

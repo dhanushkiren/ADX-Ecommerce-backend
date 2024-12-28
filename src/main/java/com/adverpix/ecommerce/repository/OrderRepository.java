@@ -1,4 +1,4 @@
-package com.adverpix.ecommerce.repository;
+package com.adverpix.ecommerce.Repository;
 
 import com.adverpix.ecommerce.entity.Order;
 import com.adverpix.ecommerce.entity.User;
