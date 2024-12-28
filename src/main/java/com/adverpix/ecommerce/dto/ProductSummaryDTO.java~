@@ -1,4 +1,0 @@
-package com.adverpix.ecommerce.dto;
-
-public class ProductSummaryDTO {
-}
