@@ -1,23 +1,17 @@
-package com.adverpix.ecommerce.repository;
+package com.adverpix.ecommerce.Repository;
 
 import com.adverpix.ecommerce.entity.Product;
-import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+import com.adverpix.ecommerce.dto.ProductSummaryDTO;
 
 import java.util.List;
-
 @Repository
 public interface ProductRepository extends JpaRepository<Product, Integer> {
+    @Query("SELECT new com.adverpix.ecommerce.dto.ProductSummaryDTO(p.name, p.price, p.ratingCount, p.imageUrl, p.stock, p.numberOfReviews) FROM Product p")
+    List<ProductSummaryDTO> findProductSummaries();
+    @Query("SELECT new com.adverpix.ecommerce.dto.ProductSummaryDTO(p.name, p.price, p.ratingCount, p.imageUrl, p.stock, p.numberOfReviews) FROM Product p WHERE p.id = :id")
+    ProductSummaryDTO findProductSummaryById(Integer id);
 
-    @Query("SELECT p FROM Product p " +
-            "WHERE (:category IS NULL OR p.category = :category) " +
-            "AND (:minPrice IS NULL OR p.price >= :minPrice) " +
-            "AND (:maxPrice IS NULL OR p.price <= :maxPrice)")
-    List<Product> findWithFilters(@Param("category") String category,
-                                  @Param("minPrice") Double minPrice,
-                                  @Param("maxPrice") Double maxPrice,
-                                  Sort sort);
 }
