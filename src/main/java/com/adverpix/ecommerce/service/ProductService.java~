@@ -50,8 +50,8 @@ public class ProductService {
         product.setImageUrl(IMAGE_DIRECTORY + imageUrl);
 
         // Check if category and seller are valid
-        if (categoryRepository.existsById(product.getCategory().getCategory_id()) && // we use getCategory_id() two times since it is a foreign key
-                sellerRepository.existsById(product.getSeller().getSeller_id())) {
+        if (categoryRepository.existsById(product.getCategory_id().getCategory_id()) && // we use getCategory_id() two times since it is a foreign key
+                sellerRepository.existsById(product.getSeller_id().getSeller_id())) {
             return productRepository.save(product);
         } else {
             throw new RuntimeException("Invalid category or seller ID.");

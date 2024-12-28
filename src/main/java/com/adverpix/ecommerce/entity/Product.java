@@ -25,10 +25,10 @@ public class Product {
     private int numberOfReviews;
 
     @ManyToOne
-    @JoinColumn(name = "category_id")
-    private Category category_id;
+    @JoinColumn(name = "category")
+    private Category category;
 
     @ManyToOne
-    @JoinColumn(name = "seller_id")
-    private Seller seller_id;
+    @JoinColumn(name = "seller")
+    private Seller seller;
 }
