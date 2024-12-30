@@ -5,6 +5,7 @@ import java.util.List;
 import lombok.Data;
 
 @Data
+@Entity
 @Table(name = "sellers")
 public class Seller {
 
@@ -17,7 +18,6 @@ public class Seller {
     private String password;
     private String address;
     private String contact_number;
-    private String image_url;
     private String description;
 
     @OneToMany(mappedBy = "seller_id", cascade = CascadeType.ALL)

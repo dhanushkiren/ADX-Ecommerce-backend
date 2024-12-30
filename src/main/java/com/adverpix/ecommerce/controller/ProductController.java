@@ -3,6 +3,7 @@ import com.adverpix.ecommerce.dto.ProductRequestDTO;
 import com.adverpix.ecommerce.dto.ProductSummaryDTO;
 import com.adverpix.ecommerce.entity.Product;
 import com.adverpix.ecommerce.service.ProductService;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;// this import is to handle the HTTP status codes
 import org.springframework.http.ResponseEntity;
@@ -19,64 +20,38 @@ public class ProductController {
     @Autowired
     private ProductService productService;
 
-    // Create product with image
-    @PostMapping("/add")
-    public ResponseEntity<ProductSummaryDTO> addProduct(
-            @RequestPart("product") ProductRequestDTO productRequestDTO,
-            @RequestPart("images") List<MultipartFile> images) {
-        try {
-            productRequestDTO.setImages(images);
-            ProductSummaryDTO createdProduct = productService.addProduct(productRequestDTO);
-            return ResponseEntity.ok(createdProduct);
-        } catch (IOException e) {
-            return ResponseEntity.badRequest().body(null);
-        }
-    }
-
-    // Get all products
+    // Endpoint to get all product summaries
     @GetMapping
-    public ResponseEntity<List<ProductSummaryDTO>> getAllProducts() {
-        List<ProductSummaryDTO> products = productService.getAllProducts();
+    public ResponseEntity<List<Product>> getAllProducts() {
+        List<Product> products = productService.getAllProducts();
         return ResponseEntity.ok(products);
     }
 
-    // Get product by ID
+    // Endpoint to get a product by its ID
     @GetMapping("/{id}")
     public ResponseEntity<ProductSummaryDTO> getProductById(@PathVariable int id) {
-        try {
-            ProductSummaryDTO product = productService.getProductById(id);
-            return ResponseEntity.ok(product);
-        } catch (RuntimeException e) {
-            return ResponseEntity.notFound().build();
-        }
+        ProductSummaryDTO product = productService.getProductById(id);
+        return ResponseEntity.ok(product);
     }
 
-    // Update a product
+    // Endpoint to add a new product
+    @PostMapping
+    public ResponseEntity<ProductSummaryDTO> addProduct(@ModelAttribute ProductRequestDTO productRequestDTO) throws IOException {
+        ProductSummaryDTO product = productService.addProduct(productRequestDTO);
+        return ResponseEntity.ok(product);
+    }
+
+    // Endpoint to update an existing product
     @PutMapping("/{id}")
-    public ResponseEntity<ProductSummaryDTO> updateProduct(
-            @PathVariable int id,
-            @RequestPart("product") ProductRequestDTO productRequestDTO,
-            @RequestPart(value = "images", required = false) List<MultipartFile> images) {
-        try {
-            if (images != null) {
-                productRequestDTO.setImages(images);
-            }
-            ProductSummaryDTO updatedProduct = productService.updateProduct(id, productRequestDTO);
-            return ResponseEntity.ok(updatedProduct);
-        } catch (IOException | RuntimeException e) {
-            return ResponseEntity.badRequest().body(null);
-        }
+    public ResponseEntity<ProductSummaryDTO> updateProduct(@PathVariable int id, @ModelAttribute ProductRequestDTO productRequestDTO) throws IOException {
+        ProductSummaryDTO updatedProduct = productService.updateProduct(id, productRequestDTO);
+        return ResponseEntity.ok(updatedProduct);
     }
 
-    // Delete a product by ID
+    // Endpoint to delete a product
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteProduct(@PathVariable int id) {
-        try {
-            productService.deleteProduct(id);
-            return ResponseEntity.noContent().build();
-        } catch (RuntimeException e) {
-            return ResponseEntity.notFound().build();
-        }
+        productService.deleteProduct(id);
+        return ResponseEntity.noContent().build();
     }
 }
-

@@ -29,6 +29,13 @@ public class ProductService {
 
     @Autowired
     private SellerRepository sellerRepository;
+
+    private static final String IMAGE_DIRECTORY = "static/uploaded-images/";
+    private static final int MAX_IMAGES = 10;
+    private static final List<String> ALLOWED_IMAGE_TYPES = List.of(
+            "image/png", "image/jpeg", "image/jpg", "image/webp", "image/heif", "image/heic"
+    );
+
     public List<ProductSummaryDTO> getProductSummaries() {
         return productRepository.findProductSummaries();
     }
@@ -36,50 +43,35 @@ public class ProductService {
     public ProductSummaryDTO getProductSummaryById(int id) {
         return productRepository.findProductSummaryById(id);
     }
-    private static final String IMAGE_DIRECTORY = "static/uploaded-images/"; // Directory for storing uploaded images
-    private static final int MAX_IMAGES = 10; // Maximum number of images allowed
-
-    // Allowed MIME types for image validation
-    private static final List<String> ALLOWED_IMAGE_TYPES = List.of(// List of allowed image types
-            "image/png",
-            "image/jpeg",
-            "image/jpg",
-            "image/webp",
-            "image/heif",
-            "image/heic"//Only allows PNG, JPEG, JPG, WebP, HEIF, or HEIC formats.
-    );
 
     /**
-     * Validates the type of the uploaded file.
-     * Only allows PNG, JPEG, JPG, WebP, HEIF, or HEIC formats.
-     *
-     * @param file The file to validate
-     * @throws IllegalArgumentException if the file is not a valid image
+     * Validates the image type.
      */
-    private void validateImageType(MultipartFile file) throws IOException {//Validates the type of the uploaded file
-        String mimeType = Files.probeContentType(Paths.get(Objects.requireNonNull(file.getOriginalFilename())));//probeContentType is used to get the MIME type of the file
-        if (!ALLOWED_IMAGE_TYPES.contains(mimeType)) { //Checking if the MIME type is allowed
-            throw new IllegalArgumentException(
-                    "Invalid file type. Only PNG, JPEG, JPG, WebP, HEIF, and HEIC are allowed."
-            );
+    private void validateImageType(MultipartFile file) throws IOException {
+        String mimeType = Files.probeContentType(Paths.get(Objects.requireNonNull(file.getOriginalFilename())));
+        if (!ALLOWED_IMAGE_TYPES.contains(mimeType)) {
+            throw new IllegalArgumentException("Invalid file type. Only PNG, JPEG, JPG, WebP, HEIF, and HEIC are allowed.");
         }
     }
 
-    // Save a single image
+    /**
+     * Saves a single image and returns its file name.
+     */
     private String saveImage(MultipartFile image) throws IOException {
-        validateImageType(image); // Validate the image type
-
-        Path directoryPath = Paths.get(IMAGE_DIRECTORY);//Get the directory path
-        if (!Files.exists(directoryPath)) {//Check if the directory exists
-            Files.createDirectories(directoryPath);//If the directory dosnt exists create it
+        validateImageType(image);
+        Path directoryPath = Paths.get(IMAGE_DIRECTORY);
+        if (!Files.exists(directoryPath)) {
+            Files.createDirectories(directoryPath);
         }
-        String fileName = System.currentTimeMillis() + "_" + image.getOriginalFilename();//creating the unique image name
-        Path filePath = directoryPath.resolve(fileName);//Creating the file path
-        Files.copy(image.getInputStream(), filePath);//Copying the image to the file path
+        String fileName = System.currentTimeMillis() + "_" + image.getOriginalFilename();
+        Path filePath = directoryPath.resolve(fileName);
+        Files.copy(image.getInputStream(), filePath);
         return fileName;
     }
 
-    // Save multiple images
+    /**
+     * Saves multiple images and returns their URLs.
+     */
     private List<String> saveImages(List<MultipartFile> images) throws IOException {
         if (images.size() > MAX_IMAGES) {
             throw new IllegalArgumentException("Cannot upload more than " + MAX_IMAGES + " images.");
@@ -93,7 +85,9 @@ public class ProductService {
         return imageUrls;
     }
 
-    // Convert Product entity to ProductSummaryDTO
+    /**
+     * Converts a Product entity to a ProductSummaryDTO.
+     */
     private ProductSummaryDTO convertToResponseDTO(Product product) {
         ProductSummaryDTO responseDTO = new ProductSummaryDTO();
         responseDTO.setId(product.getId());
@@ -108,7 +102,9 @@ public class ProductService {
         return responseDTO;
     }
 
-    // Create a new product
+    /**
+     * Creates a new product.
+     */
     public ProductSummaryDTO addProduct(ProductRequestDTO requestDTO) throws IOException {
         if (requestDTO.getImages() == null || requestDTO.getImages().isEmpty()) {
             throw new IllegalArgumentException("At least one image must be uploaded.");
@@ -116,7 +112,6 @@ public class ProductService {
 
         List<String> imageUrls = saveImages(requestDTO.getImages());
 
-        // Create and populate the Product entity
         Product product = new Product();
         product.setName(requestDTO.getName());
         product.setDescription(requestDTO.getDescription());
@@ -126,26 +121,29 @@ public class ProductService {
         product.setImageUrl(String.join(",", imageUrls));
 
         // Validate category and seller
-        if (categoryRepository.existsById(requestDTO.getCategoryId()) &&
-                sellerRepository.existsById(requestDTO.getSellerId())) {
-            product.setCategory_id(categoryRepository.findById(requestDTO.getCategoryId()).get());
-            product.setSeller_id(sellerRepository.findById(requestDTO.getSellerId()).get());
-        } else {
-            throw new RuntimeException("Invalid category or seller ID.");
+        if (!categoryRepository.existsById(requestDTO.getCategoryId()) || !sellerRepository.existsById(requestDTO.getSellerId())) {
+            throw new IllegalArgumentException("Invalid category or seller.");
         }
+
+        product.setCategory_id(categoryRepository.findById(requestDTO.getCategoryId()).get());
+        product.setSeller_id(sellerRepository.findById(requestDTO.getSellerId()).get());
 
         Product savedProduct = productRepository.save(product);
         return convertToResponseDTO(savedProduct);
     }
 
-    // Get product by ID
+    /**
+     * Retrieves a product by ID.
+     */
     public ProductSummaryDTO getProductById(int id) {
         Product product = productRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Product not found with ID: " + id));
         return convertToResponseDTO(product);
     }
 
-    // Update product details
+    /**
+     * Updates product details.
+     */
     public ProductSummaryDTO updateProduct(int id, ProductRequestDTO requestDTO) throws IOException {
         Product existingProduct = productRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Product not found with ID: " + id));
@@ -161,17 +159,20 @@ public class ProductService {
         existingProduct.setStock(requestDTO.getStock());
         existingProduct.setRatingCount(requestDTO.getRatingCount());
 
-        if (categoryRepository.existsById(requestDTO.getCategoryId()) &&
-                sellerRepository.existsById(requestDTO.getSellerId())) {
-            existingProduct.setCategory_id(categoryRepository.findById(requestDTO.getCategoryId()).get());
-            existingProduct.setSeller_id(sellerRepository.findById(requestDTO.getSellerId()).get());
+        if (!categoryRepository.existsById(requestDTO.getCategoryId()) || !sellerRepository.existsById(requestDTO.getSellerId())) {
+            throw new IllegalArgumentException("Invalid category or seller.");
         }
+
+        existingProduct.setCategory_id(categoryRepository.findById(requestDTO.getCategoryId()).get());
+        existingProduct.setSeller_id(sellerRepository.findById(requestDTO.getSellerId()).get());
 
         Product updatedProduct = productRepository.save(existingProduct);
         return convertToResponseDTO(updatedProduct);
     }
 
-    // Delete a product
+    /**
+     * Deletes a product.
+     */
     public void deleteProduct(int id) {
         Product product = productRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Product not found with ID: " + id));
@@ -179,7 +180,9 @@ public class ProductService {
         productRepository.deleteById(id);
     }
 
-    // Delete associated images
+    /**
+     * Deletes associated images.
+     */
     private void deleteImages(String imageUrls) {
         if (imageUrls != null && !imageUrls.isEmpty()) {
             String[] images = imageUrls.split(",");
@@ -194,16 +197,21 @@ public class ProductService {
         }
     }
 
-    // Get all products
-    public List<ProductSummaryDTO> getAllProducts() {
-        List<Product> products = (List<Product>) productRepository.findAll();
-        List<ProductSummaryDTO> responseDTOs = new ArrayList<>();
-        for (Product product : products) {
-            responseDTOs.add(convertToResponseDTO(product));
-        }
-        return responseDTOs;
+    /**
+     * Retrieves all products.
+     */
+//    public List<ProductSummaryDTO> getAllProducts() {
+//        List<Product> products = (List<Product>) productRepository.findAll();
+//        List<ProductSummaryDTO> responseDTOs = new ArrayList<>();
+//        for (Product product : products) {
+//            responseDTOs.add(convertToResponseDTO(product));
+//        }
+//        return responseDTOs;
+//    }
+
+    public List<Product> getAllProducts() {
+        return productRepository.findAll();
     }
 }
-
 
 

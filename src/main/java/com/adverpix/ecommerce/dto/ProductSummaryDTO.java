@@ -13,7 +13,7 @@ public class ProductSummaryDTO {
     private String description;
     private double price;
     private int stock;
-    private int ratingCount;
+    private Float ratingCount;
     private String imageUrls;
     private int categoryId;
     private int sellerId;
