@@ -1,5 +1,5 @@
 package com.adverpix.ecommerce.controller;
-//Product-/-Category-/-Seller
+import com.adverpix.ecommerce.dto.ProductRequestDTO;
 import com.adverpix.ecommerce.dto.ProductSummaryDTO;
 import com.adverpix.ecommerce.entity.Product;
 import com.adverpix.ecommerce.service.ProductService;
@@ -21,48 +21,62 @@ public class ProductController {
 
     // Create product with image
     @PostMapping("/add")
-    @ResponseStatus(HttpStatus.CREATED)
-    public Product addProductWithImage(@RequestPart("product") Product product,
-                                       @RequestPart("image") MultipartFile image) throws IOException {//This method is designed to handle HTTP requests for adding a product along with an associated image. Here’s what it does, part by part
-        return productService.addProductWithImage(product, image);
+    public ResponseEntity<ProductSummaryDTO> addProduct(
+            @RequestPart("product") ProductRequestDTO productRequestDTO,
+            @RequestPart("images") List<MultipartFile> images) {
+        try {
+            productRequestDTO.setImages(images);
+            ProductSummaryDTO createdProduct = productService.addProduct(productRequestDTO);
+            return ResponseEntity.ok(createdProduct);
+        } catch (IOException e) {
+            return ResponseEntity.badRequest().body(null);
+        }
     }
 
     // Get all products
-    @GetMapping("/all")
-    public Iterable<Product> getAllProducts() {
-        return productService.getAllProducts();
+    @GetMapping
+    public ResponseEntity<List<ProductSummaryDTO>> getAllProducts() {
+        List<ProductSummaryDTO> products = productService.getAllProducts();
+        return ResponseEntity.ok(products);
     }
 
     // Get product by ID
     @GetMapping("/{id}")
-    public Product getProductById(@PathVariable int id) {
-        return productService.getProductById(id);
+    public ResponseEntity<ProductSummaryDTO> getProductById(@PathVariable int id) {
+        try {
+            ProductSummaryDTO product = productService.getProductById(id);
+            return ResponseEntity.ok(product);
+        } catch (RuntimeException e) {
+            return ResponseEntity.notFound().build();
+        }
     }
 
-    // Update product
-    @PutMapping("/update/{id}")
-    public Product updateProduct(@PathVariable int id, @RequestBody Product updatedProduct) {
-        return productService.updateProduct(id, updatedProduct);
+    // Update a product
+    @PutMapping("/{id}")
+    public ResponseEntity<ProductSummaryDTO> updateProduct(
+            @PathVariable int id,
+            @RequestPart("product") ProductRequestDTO productRequestDTO,
+            @RequestPart(value = "images", required = false) List<MultipartFile> images) {
+        try {
+            if (images != null) {
+                productRequestDTO.setImages(images);
+            }
+            ProductSummaryDTO updatedProduct = productService.updateProduct(id, productRequestDTO);
+            return ResponseEntity.ok(updatedProduct);
+        } catch (IOException | RuntimeException e) {
+            return ResponseEntity.badRequest().body(null);
+        }
     }
 
-    // Delete the product
-    @DeleteMapping("/delete/{id}")
-    public void deleteProduct(@PathVariable int id) { // delete the product using its id
-        productService.deleteProduct(id);
+    // Delete a product by ID
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteProduct(@PathVariable int id) {
+        try {
+            productService.deleteProduct(id);
+            return ResponseEntity.noContent().build();
+        } catch (RuntimeException e) {
+            return ResponseEntity.notFound().build();
+        }
     }
-// This route will bring the specific product attributes from the DataBase using the DTO
-    @GetMapping("/summaries")
-    public ResponseEntity<List<ProductSummaryDTO>> getProductSummaries() {
-        List<ProductSummaryDTO> productSummaries = productService.getProductSummaries();
-        return ResponseEntity.ok(productSummaries);
-    }
-
-    @GetMapping("/summaries/{id}")
-    public ResponseEntity<ProductSummaryDTO> getProductSummaryById(@PathVariable int id)
-    {
-        ProductSummaryDTO productSummary = productService.getProductSummaryById(id);
-        return ResponseEntity.ok(productSummary);
-    }
-
 }
 
