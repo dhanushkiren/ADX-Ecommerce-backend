@@ -12,11 +12,10 @@ public class Product {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
-//Product-/-Category-/-Seller
     private String name;
     private String description;
     private int price;
-    private int ratingCount;
+    private Float ratingCount;
     private String review;
     private String offerDetails;
     private int quantity;
@@ -29,11 +28,14 @@ public class Product {
     private boolean availability;
 
     @ManyToOne
-    @JoinColumn(name = "category")
-    private Category category;
+    @JoinColumn(name = "category_id")
+    private Category category_id;
 
     @ManyToOne
-    @JoinColumn(name = "seller")
-    private Seller seller;
+    @JoinColumn(name = "seller_id")
+    private Seller seller_id;
+
+
+
 
 }
