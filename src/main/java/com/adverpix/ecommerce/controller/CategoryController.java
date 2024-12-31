@@ -3,6 +3,7 @@ package com.adverpix.ecommerce.controller;
 import com.adverpix.ecommerce.entity.Category;
 import com.adverpix.ecommerce.service.CategoryService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -10,37 +11,46 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/api/categories")//It's the base URL
+@RequestMapping("/api/categories")
 public class CategoryController {
 
-    @Autowired // used to inject the CategoryService
-    private CategoryService categoryService; // import the CategoryService
+    @Autowired
+    private CategoryService categoryService;
 
-    @GetMapping // Handles only the Get request
+    // Get all categories
+    @GetMapping
     public List<Category> getAllCategories() {
-        return categoryService.getAllCategories();// returns all the categories
+        return categoryService.getAllCategories();
     }
 
-    @GetMapping("/{id}") // Handles only the Get request with a path variable(here the id is teh path variable)
-    public ResponseEntity<Category> getCategoryById(@PathVariable int id) { // Get the category by id
-        Optional<Category> category = categoryService.getCategoryById(id); // returns the category
-        return category.map(ResponseEntity::ok)//checks if the category is present
-                .orElseGet(() -> ResponseEntity.notFound().build()); //if the category is not present returns not found
+    // Get category by ID
+    @GetMapping("/{id}")
+    public ResponseEntity<Category> getCategoryById(@PathVariable int id) {
+        Optional<Category> category = categoryService.getCategoryById(id);
+        return category.map(value -> new ResponseEntity<>(value, HttpStatus.OK)).orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
-    @PostMapping // Handles only the Post request
-    public Category createCategory(@RequestBody Category category) {
-        return categoryService.createCategory(category);//  creates a new category
+    // Create a new category
+    @PostMapping
+    public ResponseEntity<Category> createCategory(@RequestBody Category category) {
+        Category createdCategory = categoryService.createCategory(category);
+        return new ResponseEntity<>(createdCategory, HttpStatus.CREATED);
     }
 
-    @PutMapping("/{id}")// Handles only the Put request(Update)
-    public ResponseEntity<Category> updateCategory(@PathVariable int id, @RequestBody Category category) {
-        Category updatedCategory = categoryService.updateCategory(id, category);// updates the category
-        return updatedCategory != null ? ResponseEntity.ok(updatedCategory) : ResponseEntity.notFound().build(); //checks if the category is updated and returns the updated category
+    // Update an existing category
+    @PutMapping("/{id}")
+    public ResponseEntity<Category> updateCategory(@PathVariable int id, @RequestBody Category categoryDetails) {
+        Category updatedCategory = categoryService.updateCategory(id, categoryDetails);
+        if (updatedCategory != null) {
+            return new ResponseEntity<>(updatedCategory, HttpStatus.OK);
+        }
+        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
+    // Delete a category
     @DeleteMapping("/{id}")
-    public void deleteCategory(@PathVariable int id) {
-        categoryService.deleteCategory(id);// deletes the category
+    public ResponseEntity<String> deleteCategory(@PathVariable int id) {
+        categoryService.deleteCategory(id);
+        return new ResponseEntity<>("Category deleted successfully", HttpStatus.OK);
     }
 }

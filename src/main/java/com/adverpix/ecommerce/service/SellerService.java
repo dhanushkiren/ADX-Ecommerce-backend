@@ -15,48 +15,63 @@ public class SellerService {
     @Autowired
     private SellerRepository sellerRepository;
 
-    private BCryptPasswordEncoder passwordEncoder;
+    @Autowired
+    private BCryptPasswordEncoder passwordEncoder; // Ensure this is a Spring bean
 
+    // Authenticate seller by email and password
     public boolean authenticateSeller(String email, String password) {
-        Seller seller = sellerRepository.findByEmail(email);//Returns a seller by email(Unique value)
+        Seller seller = sellerRepository.findByEmail(email); // Assuming a custom query method exists in the repository
         if (seller != null) {
-            // Here we encrypt the plain text and check if the encrypted text is equal to the hashed password
-            return passwordEncoder.matches(password, seller.getPassword());//Returns true if the password is correct
+            // Match the entered password with the hashed password
+            return passwordEncoder.matches(password, seller.getPassword());
         }
         return false;
     }
 
+    // Get all sellers
     public List<Seller> getAllSellers() {
-        return sellerRepository.findAll();//Returns a list of all the sellers
+        return sellerRepository.findAll();
     }
 
+    // Get a seller by ID
     public Optional<Seller> getSellerById(int id) {
-        return sellerRepository.findById(id);//Returns a seller by id
+        return sellerRepository.findById(id);
     }
 
+    // Create a new seller
     public Seller createSeller(Seller seller) {
-        String encryptedPassword = passwordEncoder.encode(seller.getPassword());//Encrypts the password(WE use BCrypt to encrypt the password)
-        seller.setPassword(encryptedPassword);//Sets the encrypted password
-        return sellerRepository.save(seller);//creates a new seller
+        // Encrypt the seller's password
+        String encryptedPassword = passwordEncoder.encode(seller.getPassword());
+        seller.setPassword(encryptedPassword);
+        return sellerRepository.save(seller);
     }
 
+    // Update an existing seller
     public Seller updateSeller(int id, Seller sellerDetails) {
         Optional<Seller> optionalSeller = sellerRepository.findById(id);
         if (optionalSeller.isPresent()) {
             Seller seller = optionalSeller.get();
             seller.setName(sellerDetails.getName());
             seller.setEmail(sellerDetails.getEmail());
-            seller.setPassword(sellerDetails.getPassword());
+            // Only encrypt the password if it's changed
+            if (sellerDetails.getPassword() != null && !sellerDetails.getPassword().isEmpty()) {
+                String encryptedPassword = passwordEncoder.encode(sellerDetails.getPassword());
+                seller.setPassword(encryptedPassword);
+            }
             seller.setAddress(sellerDetails.getAddress());
             seller.setContact_number(sellerDetails.getContact_number());
-            seller.setImage_url(sellerDetails.getImage_url());
             seller.setDescription(sellerDetails.getDescription());
-            return sellerRepository.save(seller);// saves the updated seller
+            return sellerRepository.save(seller);
         }
-        return null;
+        throw new RuntimeException("Seller not found with ID: " + id);
     }
 
+    // Delete a seller by ID
     public void deleteSeller(int id) {
-        sellerRepository.deleteById(id);// deletes the seller
+        if (sellerRepository.existsById(id)) {
+            sellerRepository.deleteById(id);
+        } else {
+            throw new RuntimeException("Seller not found with ID: " + id);
+        }
     }
 }

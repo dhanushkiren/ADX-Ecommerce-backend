@@ -13,37 +13,37 @@ public class CategoryService {
 
     @Autowired
     private CategoryRepository categoryRepository;
-    private SellerRepository sellerRepository;
 
+    // Get all categories
     public List<Category> getAllCategories() {
-        return categoryRepository.findAll();//get all categories
+        return categoryRepository.findAll();
     }
 
+    // Get category by ID
     public Optional<Category> getCategoryById(int id) {
-        return categoryRepository.findById(id);//get category by id
+        return categoryRepository.findById(id);
     }
 
+    // Create new category
     public Category createCategory(Category category) {
-        if(sellerRepository.existsById(category.getSeller().getSeller_id())){ //Check if the Seller exists
-            return categoryRepository.save(category);//create a new category only if the seller exists
-        }
-        throw new RuntimeException("Invalid seller ID.");
+        return categoryRepository.save(category);
     }
 
+    // Update existing category
     public Category updateCategory(int id, Category categoryDetails) {
         Optional<Category> optionalCategory = categoryRepository.findById(id);
         if (optionalCategory.isPresent()) {
             Category category = optionalCategory.get();
             category.setCategory_name(categoryDetails.getCategory_name());
             category.setDescription(categoryDetails.getDescription());
-            category.setImage_url(categoryDetails.getImage_url());
-            category.setSeller(categoryDetails.getSeller());
-            return categoryRepository.save(category);//update the category
+            category.setSeller(categoryDetails.getSeller()); // Assuming you want to update the seller
+            return categoryRepository.save(category);
         }
         return null;
     }
 
+    // Delete category by ID
     public void deleteCategory(int id) {
-        categoryRepository.deleteById(id);//delete the category
+        categoryRepository.deleteById(id);
     }
 }
