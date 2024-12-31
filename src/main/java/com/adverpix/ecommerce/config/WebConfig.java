@@ -12,5 +12,7 @@ public class WebConfig implements WebMvcConfigurer {
         // Serve images from the 'uploaded-images' directory
         registry.addResourceHandler("/static/uploaded-images/**")//registry.addResourceHandler is used to register resource handlers
                 .addResourceLocations("file:uploaded-images/");//addResourceLocations is used to specify the location of the resources
+        registry.addResourceHandler("/user-uploaded-images/**") // URL pattern to match for user-uploaded images
+                .addResourceLocations("file:src/main/resources/static/user-uploaded-images/"); // Location of user-uploaded images
     }
 }
