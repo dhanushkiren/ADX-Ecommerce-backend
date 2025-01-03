@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/auth")
+@RequestMapping("api/auth")
 public class AuthController {
 
     private final AuthenticationManager authenticationManager;
@@ -59,6 +59,7 @@ public class AuthController {
     public ResponseEntity<String> login(@RequestBody LoginDto loginRequest){
 
         try{
+            System.out.println("dkdk::" + loginRequest);
             authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword()));
         } catch (BadCredentialsException e) {
             throw new CustomException("Incorrect username or password", HttpStatus.BAD_REQUEST);
