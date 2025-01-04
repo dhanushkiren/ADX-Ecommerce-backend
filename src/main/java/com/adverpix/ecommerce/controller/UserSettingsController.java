@@ -24,7 +24,7 @@ public class UserSettingsController {
                                                      @RequestParam("firstName") String firstName,
                                                      @RequestParam("lastName") String lastName,
                                                      @RequestParam("email") String email,
-                                                     @RequestParam("address") String address,
+                                                     @RequestParam("addresses") String addresses,
                                                      @RequestParam("mobile") String mobile,
                                                      @RequestParam("role") String role,
                                                      @RequestParam("country") String country) throws IOException {
@@ -33,7 +33,7 @@ public class UserSettingsController {
         userSettingDto.setFirstName(firstName);
         userSettingDto.setLastName(lastName);
         userSettingDto.setEmail(email);
-        userSettingDto.setAddress(address);
+        userSettingDto.setAddresses(List.of(addresses));
         userSettingDto.setMobile(mobile);
         userSettingDto.setRole(role);
         userSettingDto.setCountry(country);
@@ -61,7 +61,7 @@ public class UserSettingsController {
                                                      @RequestParam("firstName") String firstName,
                                                      @RequestParam("lastName") String lastName,
                                                      @RequestParam("email") String email,
-                                                     @RequestParam("address") String address,
+                                                     @RequestParam("addresses") String addresses,
                                                      @RequestParam("mobile") String mobile,
                                                      @RequestParam("role") String role,
                                                      @RequestParam("country") String country) throws IOException {
@@ -70,7 +70,7 @@ public class UserSettingsController {
         userSettingDto.setFirstName(firstName);
         userSettingDto.setLastName(lastName);
         userSettingDto.setEmail(email);
-        userSettingDto.setAddress(address);
+        userSettingDto.setAddresses(List.of(addresses));
         userSettingDto.setMobile(mobile);
         userSettingDto.setRole(role);
         userSettingDto.setCountry(country);
@@ -84,4 +84,18 @@ public class UserSettingsController {
         userSettingsService.deleteUser(id);
         return ResponseEntity.noContent().build();
     }
+    @PostMapping("/{id}/addresses")
+    public ResponseEntity<UserSettingDto> addAddress(@PathVariable("id") Long userId,
+                                                     @RequestBody String newAddress) {
+        User user = userSettingsService.addAddress(userId, newAddress);
+        return ResponseEntity.ok(userSettingsService.mapEntityToDTO(user));
+    }
+
+    @DeleteMapping("/{id}/addresses")
+    public ResponseEntity<UserSettingDto> removeAddress(@PathVariable("id") Long userId,
+                                                        @RequestBody String addressToRemove) {
+        User user = userSettingsService.removeAddress(userId, addressToRemove);
+        return ResponseEntity.ok(userSettingsService.mapEntityToDTO(user));
+    }
+
 }

@@ -23,7 +23,7 @@ public class UserSettingsService {
         user.setFirstName(userSettingDto.getFirstName());
         user.setLastName(userSettingDto.getLastName());
         user.setEmail(userSettingDto.getEmail());
-        user.setAddress(userSettingDto.getAddress());
+        user.setAddresses(userSettingDto.getAddresses());
         user.setMobile(Long.parseLong(userSettingDto.getMobile()));
         user.setRole(userSettingDto.getRole());
         user.setCountry(userSettingDto.getCountry());
@@ -43,7 +43,7 @@ public class UserSettingsService {
             user.setFirstName(userSettingDto.getFirstName());
             user.setLastName(userSettingDto.getLastName());
             user.setEmail(userSettingDto.getEmail());
-            user.setAddress(userSettingDto.getAddress());
+            user.setAddresses(userSettingDto.getAddresses());
             user.setMobile(Long.parseLong(userSettingDto.getMobile()));
             user.setRole(userSettingDto.getRole());
             user.setCountry(userSettingDto.getCountry());
@@ -85,7 +85,7 @@ public class UserSettingsService {
         dto.setFirstName(user.getFirstName());
         dto.setLastName(user.getLastName());
         dto.setEmail(user.getEmail());
-        dto.setAddress(user.getAddress());
+        dto.setAddresses(user.getAddresses());
         dto.setMobile(user.getMobile().toString());
         dto.setRole(user.getRole());
         dto.setCountry(user.getCountry());
@@ -108,6 +108,27 @@ public class UserSettingsService {
         java.nio.file.Path filePath = java.nio.file.Paths.get(uploadDir, fileName);// Create the file path
         image.transferTo(filePath);// Save the image
         return "/static/user-uploaded-images/" + fileName;
+    }
+    // Add a new address to the user's address list
+    public User addAddress(Long userId, String newAddress) {
+        Optional<User> optionalUser = userRepository.findById(userId); // Fetch user by ID
+        if (optionalUser.isPresent()) {
+            User user = optionalUser.get(); // Retrieve the user
+            user.getAddresses().add(newAddress); // Add the new address to the existing list
+            return userRepository.save(user); // Save the updated user entity
+        }
+        throw new RuntimeException("User not found with id " + userId);
+    }
+
+    // Remove an address from the user's address list
+    public User removeAddress(Long userId, String addressToRemove) {
+        Optional<User> optionalUser = userRepository.findById(userId); // Fetch user by ID
+        if (optionalUser.isPresent()) {
+            User user = optionalUser.get(); // Retrieve the user
+            user.getAddresses().remove(addressToRemove); // Remove the specified address from the list
+            return userRepository.save(user); // Save the updated user entity
+        }
+        throw new RuntimeException("User not found with id " + userId);
     }
 
 }
