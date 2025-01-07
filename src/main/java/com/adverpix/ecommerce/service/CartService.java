@@ -3,8 +3,8 @@ package com.adverpix.ecommerce.service;
 import com.adverpix.ecommerce.entity.CartItem;
 import com.adverpix.ecommerce.repository.CartItemRepository;
 import org.springframework.stereotype.Service;
-
 import java.util.List;
+
 
 @Service
 public class CartService {
@@ -32,4 +32,3 @@ public class CartService {
         cartItemRepository.deleteAll(items);
     }
 }
-
