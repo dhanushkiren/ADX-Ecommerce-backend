@@ -8,6 +8,7 @@ import lombok.Setter;
 import org.springframework.web.bind.annotation.GetMapping;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 
@@ -34,4 +35,6 @@ public class User {
     private String image_url;
     private String role;
     private String Country;
+    @Temporal(TemporalType.DATE)
+    private Date date_of_birth;
 }

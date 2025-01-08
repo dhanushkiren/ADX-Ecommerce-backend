@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.sql.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -21,17 +22,24 @@ public class UserSettingsService {
         User user = new User();
         user.setUsername(userSettingDto.getUsername());
         user.setFirstName(userSettingDto.getFirstName());
-        user.setLastName(userSettingDto.getLastName());
+        if (userSettingDto.getLastName() == null) {
+            user.setLastName(null);
+        }
+        else {
+            user.setLastName(userSettingDto.getLastName());
+        }
         user.setEmail(userSettingDto.getEmail());
         user.setAddresses(userSettingDto.getAddresses());
         user.setMobile(Long.parseLong(userSettingDto.getMobile()));
         user.setRole(userSettingDto.getRole());
+        user.setDate_of_birth(userSettingDto.getDate_of_birth());
         user.setCountry(userSettingDto.getCountry());
         if (userSettingDto.getImage() != null && !userSettingDto.getImage().isEmpty()) { // Check if image is present
             String imageUrl = saveImage(userSettingDto.getImage());// Save the image
             user.setImage_url(imageUrl);// Set the image URL
+        } else {
+            user.setImage_url(null);
         }
-
         return userRepository.save(user);
     }
 
@@ -39,18 +47,26 @@ public class UserSettingsService {
         Optional<User> optionalUser = userRepository.findById(id);
         if (optionalUser.isPresent()) {
             User user = optionalUser.get();
-            user.setUsername(userSettingDto.getUsername());
             user.setFirstName(userSettingDto.getFirstName());
-            user.setLastName(userSettingDto.getLastName());
+            if (userSettingDto.getLastName() == null) {
+                user.setLastName(null);
+            }
+            else {
+                user.setLastName(userSettingDto.getLastName());
+            }
             user.setEmail(userSettingDto.getEmail());
             user.setAddresses(userSettingDto.getAddresses());
             user.setMobile(Long.parseLong(userSettingDto.getMobile()));
-            user.setRole(userSettingDto.getRole());
+            user.setDate_of_birth(userSettingDto.getDate_of_birth());
+            user.setDate_of_birth(userSettingDto.getDate_of_birth());
             user.setCountry(userSettingDto.getCountry());
 
             if (userSettingDto.getImage() != null && !userSettingDto.getImage().isEmpty()) {//Similar to the createuser Check if the image is present
                 String imageUrl = saveImage(userSettingDto.getImage());// saving the image and getting the image url
                 user.setImage_url(imageUrl);// setting the image url
+            }
+            else {
+                user.setImage_url(null);
             }
 
             return userRepository.save(user);
@@ -88,6 +104,7 @@ public class UserSettingsService {
         dto.setAddresses(user.getAddresses());
         dto.setMobile(user.getMobile().toString());
         dto.setRole(user.getRole());
+        dto.setDate_of_birth(user.getDate_of_birth());
         dto.setCountry(user.getCountry());
         dto.setImage_url(user.getImage_url());
         return dto;
