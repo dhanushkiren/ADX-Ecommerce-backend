@@ -30,7 +30,7 @@ public class UserSettingsService {
         }
         user.setEmail(userSettingDto.getEmail());
         user.setAddresses(userSettingDto.getAddresses());
-        user.setMobile(Long.parseLong(userSettingDto.getMobile()));
+        user.setMobile(userSettingDto.getMobile());
         user.setRole(userSettingDto.getRole());
         user.setDate_of_birth(userSettingDto.getDate_of_birth());
         user.setCountry(userSettingDto.getCountry());
@@ -56,7 +56,7 @@ public class UserSettingsService {
             }
             user.setEmail(userSettingDto.getEmail());
             user.setAddresses(userSettingDto.getAddresses());
-            user.setMobile(Long.parseLong(userSettingDto.getMobile()));
+            user.setMobile(userSettingDto.getMobile());
             user.setDate_of_birth(userSettingDto.getDate_of_birth());
             user.setDate_of_birth(userSettingDto.getDate_of_birth());
             user.setCountry(userSettingDto.getCountry());

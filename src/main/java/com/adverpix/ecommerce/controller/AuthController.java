@@ -46,7 +46,7 @@ public class AuthController {
         newUser.setUsername(registerUser.getUsername());
         String encodedPassword = passwordEncoder.encode(registerUser.getPassword());
         newUser.setPassword(encodedPassword);
-        newUser.setMobile(registerUser.getMobile());
+        newUser.setMobile(String.valueOf(registerUser.getMobile()));
         newUser.setFirstName(registerUser.getFirstName());
         newUser.setLastName(registerUser.getLastName());
 

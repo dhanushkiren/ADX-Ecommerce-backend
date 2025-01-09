@@ -30,7 +30,7 @@ public class User {
     private String email;
     private List<String> addresses = new ArrayList<>();
     private String lastName;
-    private Long mobile;
+    private String mobile;
     private String password;
     private String image_url;
     private String role;
