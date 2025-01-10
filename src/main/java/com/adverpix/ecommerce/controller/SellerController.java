@@ -1,4 +1,5 @@
 package com.adverpix.ecommerce.controller;
+import com.adverpix.ecommerce.dto.SellerDto;
 import com.adverpix.ecommerce.entity.Seller;
 import com.adverpix.ecommerce.service.SellerService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,16 +30,16 @@ public class SellerController {
 
     // Get all sellers
     @GetMapping
-    public ResponseEntity<List<Seller>> getAllSellers() {
-        List<Seller> sellers = sellerService.getAllSellers();
+    public ResponseEntity<List<SellerDto>> getAllSellers() {
+        List<SellerDto> sellers = sellerService.getAllSellers();
         return ResponseEntity.ok(sellers);
     }
 
     // Get a seller by ID
     @GetMapping("/{id}")
-    public ResponseEntity<Seller> getSellerById(@PathVariable int id) {
-        Optional<Seller> seller = sellerService.getSellerById(id);
-        return seller.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).body(null));
+    public ResponseEntity<SellerDto> getSellerById(@PathVariable int id) {
+        Optional<SellerDto> sellerDto = sellerService.getSellerById(id);
+        return sellerDto.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).body(null));
     }
 
     // Create a new seller
@@ -50,11 +51,11 @@ public class SellerController {
 
     // Update an existing seller
     @PutMapping("/{id}")
-    public ResponseEntity<Seller> updateSeller(@PathVariable int id, @RequestBody Seller sellerDetails) {
+    public ResponseEntity<SellerDto> updateSeller(@PathVariable int id, @RequestBody SellerDto sellerDto) {
         try {
-            Seller updatedSeller = sellerService.updateSeller(id, sellerDetails);
+            SellerDto updatedSeller = sellerService.updateSeller(id, sellerDto);
             return ResponseEntity.ok(updatedSeller);
-        } catch (RuntimeException e) {
+        } catch (RuntimeException ex) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
         }
     }

@@ -1,4 +1,5 @@
 package com.adverpix.ecommerce.service;
+import com.adverpix.ecommerce.dto.SellerDto;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import com.adverpix.ecommerce.entity.Seller;
@@ -29,13 +30,40 @@ public class SellerService {
     }
 
     // Get all sellers
-    public List<Seller> getAllSellers() {
-        return sellerRepository.findAll();
+    public List<SellerDto> getAllSellers() {
+        List<Seller> sellers = sellerRepository.findAll();
+        return mapEntityListToDTOList(sellers);
+    }
+    public SellerDto mapEntityToDTO(Seller seller) {//Converting the user entity to UserSettingDto to map the data
+        SellerDto dto = new SellerDto();
+        dto.setId(seller.getSeller_id());
+        dto.setName(seller.getName());
+        dto.setEmail(seller.getEmail());
+        dto.setAddress(seller.getAddress());
+        dto.setContact_number(seller.getContact_number());
+        dto.setDescription(seller.getDescription());
+        return dto;
+    }
+    private Seller mapDTOToEntity(SellerDto dto) {
+        Seller seller = new Seller();
+        seller.setSeller_id(dto.getId());
+        seller.setName(dto.getName());
+        seller.setEmail(dto.getEmail());
+        seller.setAddress(dto.getAddress());
+        seller.setContact_number(dto.getContact_number());
+        seller.setDescription(dto.getDescription());
+        return seller;
+    }
+
+
+    public List<SellerDto> mapEntityListToDTOList(List<Seller> sellers) {//to convert List of User entities to List of UserSettingDto
+        return sellers.stream().map(this::mapEntityToDTO).toList();
     }
 
     // Get a seller by ID
-    public Optional<Seller> getSellerById(int id) {
-        return sellerRepository.findById(id);
+    public Optional<SellerDto> getSellerById(int id) {
+        Optional<Seller> optionalSeller = sellerRepository.findById(id);
+        return optionalSeller.map(this::mapEntityToDTO);
     }
 
     // Create a new seller
@@ -47,21 +75,18 @@ public class SellerService {
     }
 
     // Update an existing seller
-    public Seller updateSeller(int id, Seller sellerDetails) {
+    public SellerDto updateSeller(int id, SellerDto sellerDto) {
         Optional<Seller> optionalSeller = sellerRepository.findById(id);
         if (optionalSeller.isPresent()) {
             Seller seller = optionalSeller.get();
-            seller.setName(sellerDetails.getName());
-            seller.setEmail(sellerDetails.getEmail());
-            // Only encrypt the password if it's changed
-            if (sellerDetails.getPassword() != null && !sellerDetails.getPassword().isEmpty()) {
-                String encryptedPassword = passwordEncoder.encode(sellerDetails.getPassword());
-                seller.setPassword(encryptedPassword);
-            }
-            seller.setAddress(sellerDetails.getAddress());
-            seller.setContact_number(sellerDetails.getContact_number());
-            seller.setDescription(sellerDetails.getDescription());
-            return sellerRepository.save(seller);
+            seller.setName(sellerDto.getName());
+            seller.setEmail(sellerDto.getEmail());
+            seller.setAddress(sellerDto.getAddress());
+            seller.setContact_number(sellerDto.getContact_number());
+            seller.setDescription(sellerDto.getDescription());
+
+            Seller updatedSeller = sellerRepository.save(seller);
+            return mapEntityToDTO(updatedSeller);
         }
         throw new RuntimeException("Seller not found with ID: " + id);
     }
