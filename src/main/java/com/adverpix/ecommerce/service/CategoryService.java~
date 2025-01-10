@@ -34,7 +34,7 @@ public class CategoryService {
         Optional<Category> optionalCategory = categoryRepository.findById(id);
         if (optionalCategory.isPresent()) {
             Category category = optionalCategory.get();
-            category.setName(categoryDetails.getName());
+            category.setCategory_name(categoryDetails.getCategory_name());
             category.setDescription(categoryDetails.getDescription());
             category.setSeller(categoryDetails.getSeller()); // Assuming you want to update the seller
             return categoryRepository.save(category);

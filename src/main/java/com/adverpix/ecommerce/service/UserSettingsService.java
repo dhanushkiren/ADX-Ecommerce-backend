@@ -22,12 +22,7 @@ public class UserSettingsService {
         User user = new User();
         user.setUsername(userSettingDto.getUsername());
         user.setFirstName(userSettingDto.getFirstName());
-        if (userSettingDto.getLastName() == null) {
-            user.setLastName(null);
-        }
-        else {
-            user.setLastName(userSettingDto.getLastName());
-        }
+        user.setLastName(userSettingDto.getLastName() != null ? userSettingDto.getLastName() : "");
         user.setEmail(userSettingDto.getEmail());
         user.setAddresses(userSettingDto.getAddresses());
         user.setMobile(userSettingDto.getMobile());
@@ -57,7 +52,6 @@ public class UserSettingsService {
             user.setEmail(userSettingDto.getEmail());
             user.setAddresses(userSettingDto.getAddresses());
             user.setMobile(userSettingDto.getMobile());
-            user.setDate_of_birth(userSettingDto.getDate_of_birth());
             user.setDate_of_birth(userSettingDto.getDate_of_birth());
             user.setCountry(userSettingDto.getCountry());
 
