@@ -4,11 +4,13 @@ import com.adverpix.ecommerce.dto.UserSettingDto;
 import com.adverpix.ecommerce.entity.User;
 import com.adverpix.ecommerce.service.UserSettingsService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.Date;
 import java.util.List;
 
 @RestController
@@ -24,18 +26,20 @@ public class UserSettingsController {
                                                      @RequestParam("firstName") String firstName,
                                                      @RequestParam("lastName") String lastName,
                                                      @RequestParam("email") String email,
-                                                     @RequestParam("address") String address,
+                                                     @RequestParam("addresses") String addresses,
                                                      @RequestParam("mobile") String mobile,
                                                      @RequestParam("role") String role,
+                                                     @RequestParam("date_of_birth") Date date_of_birth,
                                                      @RequestParam("country") String country) throws IOException {
         UserSettingDto userSettingDto = new UserSettingDto();// Creating a UserSettingDto with the received data
         userSettingDto.setUsername(username);
         userSettingDto.setFirstName(firstName);
         userSettingDto.setLastName(lastName);
         userSettingDto.setEmail(email);
-        userSettingDto.setAddress(address);
+        userSettingDto.setAddresses(List.of(addresses));
         userSettingDto.setMobile(mobile);
         userSettingDto.setRole(role);
+        userSettingDto.setDate_of_birth(date_of_birth);
         userSettingDto.setCountry(country);
         userSettingDto.setImage(image);
         User user = userSettingsService.createUser(userSettingDto);// Creating the User entity
@@ -57,22 +61,18 @@ public class UserSettingsController {
     @PutMapping("/{id}")
     public ResponseEntity<UserSettingDto> updateUser(@PathVariable("id") Long id,
                                                      @RequestParam("image") MultipartFile image,
-                                                     @RequestParam("username") String username,
                                                      @RequestParam("firstName") String firstName,
-                                                     @RequestParam("lastName") String lastName,
                                                      @RequestParam("email") String email,
-                                                     @RequestParam("address") String address,
+                                                     @RequestParam("addresses") String addresses,
                                                      @RequestParam("mobile") String mobile,
-                                                     @RequestParam("role") String role,
+                                                     @RequestParam("date_of_birth")@DateTimeFormat(pattern = "dd/MM/yyyy") Date date_of_birth,
                                                      @RequestParam("country") String country) throws IOException {
         UserSettingDto userSettingDto = new UserSettingDto(); // Creating a UserSettingDto with the received data
-        userSettingDto.setUsername(username);
         userSettingDto.setFirstName(firstName);
-        userSettingDto.setLastName(lastName);
         userSettingDto.setEmail(email);
-        userSettingDto.setAddress(address);
+        userSettingDto.setAddresses(List.of(addresses));
         userSettingDto.setMobile(mobile);
-        userSettingDto.setRole(role);
+        userSettingDto.setDate_of_birth(date_of_birth);
         userSettingDto.setCountry(country);
         userSettingDto.setImage(image);
         User user = userSettingsService.updateUser(id, userSettingDto);// Updating the User entity
@@ -84,4 +84,18 @@ public class UserSettingsController {
         userSettingsService.deleteUser(id);
         return ResponseEntity.noContent().build();
     }
+    @PostMapping("/{id}/addresses")
+    public ResponseEntity<UserSettingDto> addAddress(@PathVariable("id") Long userId,
+                                                     @RequestBody String newAddress) {
+        User user = userSettingsService.addAddress(userId, newAddress);
+        return ResponseEntity.ok(userSettingsService.mapEntityToDTO(user));
+    }
+
+    @DeleteMapping("/{id}/addresses")
+    public ResponseEntity<UserSettingDto> removeAddress(@PathVariable("id") Long userId,
+                                                        @RequestBody String addressToRemove) {
+        User user = userSettingsService.removeAddress(userId, addressToRemove);
+        return ResponseEntity.ok(userSettingsService.mapEntityToDTO(user));
+    }
+
 }

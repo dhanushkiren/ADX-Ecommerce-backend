@@ -7,6 +7,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.web.bind.annotation.GetMapping;
 
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 
@@ -26,12 +28,13 @@ public class User {
     private String username;
     private String firstName;
     private String email;
-    private String address;
+    private List<String> addresses = new ArrayList<>();
     private String lastName;
-    private Long mobile;
+    private String mobile;
     private String password;
     private String image_url;
     private String role;
     private String Country;
-
+    @Temporal(TemporalType.DATE)
+    private Date date_of_birth;
 }

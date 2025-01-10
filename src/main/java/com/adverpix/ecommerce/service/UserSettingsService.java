@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.sql.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -21,17 +22,24 @@ public class UserSettingsService {
         User user = new User();
         user.setUsername(userSettingDto.getUsername());
         user.setFirstName(userSettingDto.getFirstName());
-        user.setLastName(userSettingDto.getLastName());
+        if (userSettingDto.getLastName() == null) {
+            user.setLastName(null);
+        }
+        else {
+            user.setLastName(userSettingDto.getLastName());
+        }
         user.setEmail(userSettingDto.getEmail());
-        user.setAddress(userSettingDto.getAddress());
-        user.setMobile(Long.parseLong(userSettingDto.getMobile()));
+        user.setAddresses(userSettingDto.getAddresses());
+        user.setMobile(userSettingDto.getMobile());
         user.setRole(userSettingDto.getRole());
+        user.setDate_of_birth(userSettingDto.getDate_of_birth());
         user.setCountry(userSettingDto.getCountry());
         if (userSettingDto.getImage() != null && !userSettingDto.getImage().isEmpty()) { // Check if image is present
             String imageUrl = saveImage(userSettingDto.getImage());// Save the image
             user.setImage_url(imageUrl);// Set the image URL
+        } else {
+            user.setImage_url(null);
         }
-
         return userRepository.save(user);
     }
 
@@ -39,18 +47,26 @@ public class UserSettingsService {
         Optional<User> optionalUser = userRepository.findById(id);
         if (optionalUser.isPresent()) {
             User user = optionalUser.get();
-            user.setUsername(userSettingDto.getUsername());
             user.setFirstName(userSettingDto.getFirstName());
-            user.setLastName(userSettingDto.getLastName());
+            if (userSettingDto.getLastName() == null) {
+                user.setLastName(null);
+            }
+            else {
+                user.setLastName(userSettingDto.getLastName());
+            }
             user.setEmail(userSettingDto.getEmail());
-            user.setAddress(userSettingDto.getAddress());
-            user.setMobile(Long.parseLong(userSettingDto.getMobile()));
-            user.setRole(userSettingDto.getRole());
+            user.setAddresses(userSettingDto.getAddresses());
+            user.setMobile(userSettingDto.getMobile());
+            user.setDate_of_birth(userSettingDto.getDate_of_birth());
+            user.setDate_of_birth(userSettingDto.getDate_of_birth());
             user.setCountry(userSettingDto.getCountry());
 
             if (userSettingDto.getImage() != null && !userSettingDto.getImage().isEmpty()) {//Similar to the createuser Check if the image is present
                 String imageUrl = saveImage(userSettingDto.getImage());// saving the image and getting the image url
                 user.setImage_url(imageUrl);// setting the image url
+            }
+            else {
+                user.setImage_url(null);
             }
 
             return userRepository.save(user);
@@ -85,9 +101,10 @@ public class UserSettingsService {
         dto.setFirstName(user.getFirstName());
         dto.setLastName(user.getLastName());
         dto.setEmail(user.getEmail());
-        dto.setAddress(user.getAddress());
+        dto.setAddresses(user.getAddresses());
         dto.setMobile(user.getMobile().toString());
         dto.setRole(user.getRole());
+        dto.setDate_of_birth(user.getDate_of_birth());
         dto.setCountry(user.getCountry());
         dto.setImage_url(user.getImage_url());
         return dto;
@@ -108,6 +125,27 @@ public class UserSettingsService {
         java.nio.file.Path filePath = java.nio.file.Paths.get(uploadDir, fileName);// Create the file path
         image.transferTo(filePath);// Save the image
         return "/static/user-uploaded-images/" + fileName;
+    }
+    // Add a new address to the user's address list
+    public User addAddress(Long userId, String newAddress) {
+        Optional<User> optionalUser = userRepository.findById(userId); // Fetch user by ID
+        if (optionalUser.isPresent()) {
+            User user = optionalUser.get(); // Retrieve the user
+            user.getAddresses().add(newAddress); // Add the new address to the existing list
+            return userRepository.save(user); // Save the updated user entity
+        }
+        throw new RuntimeException("User not found with id " + userId);
+    }
+
+    // Remove an address from the user's address list
+    public User removeAddress(Long userId, String addressToRemove) {
+        Optional<User> optionalUser = userRepository.findById(userId); // Fetch user by ID
+        if (optionalUser.isPresent()) {
+            User user = optionalUser.get(); // Retrieve the user
+            user.getAddresses().remove(addressToRemove); // Remove the specified address from the list
+            return userRepository.save(user); // Save the updated user entity
+        }
+        throw new RuntimeException("User not found with id " + userId);
     }
 
 }
