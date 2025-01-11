@@ -62,6 +62,7 @@ public class UserSettingsController {
     public ResponseEntity<UserSettingDto> updateUser(@PathVariable("id") Long id,
                                                      @RequestParam("image") MultipartFile image,
                                                      @RequestParam("firstName") String firstName,
+                                                     @RequestParam("lastName") String lastName,
                                                      @RequestParam("email") String email,
                                                      @RequestParam("addresses") String addresses,
                                                      @RequestParam("mobile") String mobile,
@@ -69,6 +70,7 @@ public class UserSettingsController {
                                                      @RequestParam("country") String country) throws IOException {
         UserSettingDto userSettingDto = new UserSettingDto(); // Creating a UserSettingDto with the received data
         userSettingDto.setFirstName(firstName);
+        userSettingDto.setLastName(lastName != null ? lastName : "");
         userSettingDto.setEmail(email);
         userSettingDto.setAddresses(List.of(addresses));
         userSettingDto.setMobile(mobile);

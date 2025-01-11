@@ -12,7 +12,7 @@ public class Category {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY) // auto increment
     private int category_id;
-    private String category_name;
+    private String name;
     private String description;
 
 

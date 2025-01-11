@@ -1,4 +1,5 @@
 package com.adverpix.ecommerce.controller;
+import com.adverpix.ecommerce.dto.ProductOverviewDTO;
 import com.adverpix.ecommerce.dto.ProductRequestDTO;
 import com.adverpix.ecommerce.dto.ProductSummaryDTO;
 import com.adverpix.ecommerce.entity.Product;
@@ -22,9 +23,8 @@ public class ProductController {
 
     // Endpoint to get all product summaries
     @GetMapping
-    public ResponseEntity<List<Product>> getAllProducts() {
-        List<Product> products = productService.getAllProducts();
-        return ResponseEntity.ok(products);
+    public List<ProductOverviewDTO> getAllProducts() {
+        return productService.getAllProducts();
     }
 
     // Endpoint to get a product by its ID

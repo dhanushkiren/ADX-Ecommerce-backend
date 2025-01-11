@@ -1,5 +1,6 @@
 package com.adverpix.ecommerce.service;// This file is used to handle the business logic
 
+import com.adverpix.ecommerce.dto.ProductOverviewDTO;
 import com.adverpix.ecommerce.dto.ProductRequestDTO;
 import com.adverpix.ecommerce.dto.ProductSummaryDTO;// This file is used to handle the product summary
 import com.adverpix.ecommerce.entity.Product;
@@ -209,8 +210,8 @@ public class ProductService {
 //        return responseDTOs;
 //    }
 
-    public List<Product> getAllProducts() {
-        return productRepository.findAll();
+    public List<ProductOverviewDTO> getAllProducts() {
+        return productRepository.findAllProductsWithSellerAndCategory();
     }
 }
 
