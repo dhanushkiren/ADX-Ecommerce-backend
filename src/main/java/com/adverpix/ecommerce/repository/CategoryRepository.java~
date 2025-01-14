@@ -12,7 +12,7 @@ import java.util.List;
 
 @Repository
 public interface CategoryRepository extends JpaRepository<Category, Integer> {
-    @Query("SELECT new com.adverpix.ecommerce.dto.CategorySummaryDto(" +
+    @Query("SELECT new com.adverpix.ecommerce.dto.CategorySummaryDto("  +
             "c.id, " +
             "(SELECT p.imageUrl FROM Product p WHERE p.category_id.id = c.id ORDER BY RAND() LIMIT 1), " +
             "(SELECT MIN(p.price) FROM Product p WHERE p.category_id.id = c.id), " +

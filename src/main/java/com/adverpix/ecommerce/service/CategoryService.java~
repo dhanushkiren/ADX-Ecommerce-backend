@@ -86,8 +86,8 @@ public class CategoryService {
         categoryRepository.deleteById(id);
     }
 
-    public List<CategorySummaryDto> getCategorySummaries() {
-        return categoryRepository.getCategorySummaries();
+    public CategorySummaryDto getRandomImageMinPriceAndCategory() {
+        return categoryRepository.getRandomImageMinPriceAndCategory();
     }
 
     public List<CategoryResponseDto> getProductsByCategoryId(int categoryId) {
