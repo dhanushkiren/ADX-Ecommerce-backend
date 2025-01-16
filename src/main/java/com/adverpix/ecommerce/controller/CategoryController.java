@@ -1,6 +1,8 @@
 package com.adverpix.ecommerce.controller;
 
 import com.adverpix.ecommerce.dto.CategoryDto;
+import com.adverpix.ecommerce.dto.CategoryResponseDto;
+import com.adverpix.ecommerce.dto.CategorySummaryDto;
 import com.adverpix.ecommerce.entity.Category;
 import com.adverpix.ecommerce.service.CategoryService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,6 +33,24 @@ public class CategoryController {
         Optional<CategoryDto> category = categoryService.getCategoryById(id);
         return category.map(ResponseEntity::ok)
                 .orElse(ResponseEntity.status(HttpStatus.NOT_FOUND).body(null));
+    }
+
+    @GetMapping("/CategorySummary")
+    public ResponseEntity<List<CategorySummaryDto>> getCategorySummaries() {
+        List<CategorySummaryDto> summaries = categoryService.getCategorySummaries();
+        if (summaries.isEmpty()) {
+            return ResponseEntity.noContent().build();
+        }
+        return ResponseEntity.ok(summaries);
+    }
+
+    @GetMapping("/CategorySummary/{categoryId}")
+    public ResponseEntity<List<CategoryResponseDto>> getProductsByCategoryId(@PathVariable int categoryId) {
+        List<CategoryResponseDto> products = categoryService.getProductsByCategoryId(categoryId);
+        if (products.isEmpty()) {
+            return ResponseEntity.noContent().build();
+        }
+        return ResponseEntity.ok(products);
     }
 
     // Create a new category
