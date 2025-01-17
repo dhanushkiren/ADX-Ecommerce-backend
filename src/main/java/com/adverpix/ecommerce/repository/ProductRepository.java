@@ -24,10 +24,10 @@ public interface ProductRepository extends JpaRepository<Product, Integer> {
 
 
     @Query("SELECT new com.adverpix.ecommerce.dto.ProductOverviewDTO( " +
-                "p.id, p.name, p.description, p.price, p.stock, p.imageUrl, " +
-                "s.name AS sellerName, c.name AS categoryName) " +
-                "FROM Product p " +
-                "JOIN p.seller_id s " +
-                "JOIN p.category_id c")
+            "p.id, p.name, p.description, p.price, p.stock, p.imageUrl, " +
+            "s.name AS sellerName, c.name AS categoryName) " +
+            "FROM Product p " +
+            "JOIN p.seller_id s " +
+            "JOIN p.category_id c")
     List<ProductOverviewDTO> findAllProductsWithSellerAndCategory();
 }

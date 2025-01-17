@@ -22,7 +22,7 @@ public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @OneToMany
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "user_id")
     private List<Order> orders;
     private String username;
@@ -32,7 +32,9 @@ public class User {
     private String lastName;
     private String mobile;
     private String password;
-    private String image_url;
+    @Lob // For storing the image as a BLOB
+    @Column(name = "imageBlob", columnDefinition = "BLOB")
+    private byte[] imageBlob;
     private String role;
     private String Country;
     @Temporal(TemporalType.DATE)

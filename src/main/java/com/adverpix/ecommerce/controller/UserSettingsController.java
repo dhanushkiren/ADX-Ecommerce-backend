@@ -21,10 +21,10 @@ public class UserSettingsController {
     private UserSettingsService userSettingsService;
 
     @PostMapping
-    public ResponseEntity<UserSettingDto> createUser(@RequestParam("image") MultipartFile image,
+    public ResponseEntity<UserSettingDto> createUser(@RequestParam(defaultValue = "image", required = false , name = "image") MultipartFile image,
                                                      @RequestParam("username") String username,
                                                      @RequestParam("firstName") String firstName,
-                                                     @RequestParam("lastName") String lastName,
+                                                     @RequestParam(defaultValue = "", required = false, name = "lastName") String lastName,
                                                      @RequestParam("email") String email,
                                                      @RequestParam("addresses") String addresses,
                                                      @RequestParam("mobile") String mobile,
@@ -34,14 +34,20 @@ public class UserSettingsController {
         UserSettingDto userSettingDto = new UserSettingDto();// Creating a UserSettingDto with the received data
         userSettingDto.setUsername(username);
         userSettingDto.setFirstName(firstName);
-        userSettingDto.setLastName(lastName);
+        if(lastName != null) userSettingDto.setLastName(lastName);
         userSettingDto.setEmail(email);
         userSettingDto.setAddresses(List.of(addresses));
         userSettingDto.setMobile(mobile);
         userSettingDto.setRole(role);
         userSettingDto.setDate_of_birth(date_of_birth);
         userSettingDto.setCountry(country);
-        userSettingDto.setImage(image);
+        if (image != null) {
+            try {
+                userSettingDto.setImage(java.util.Base64.getEncoder().encodeToString(image.getInputStream().readAllBytes()));
+            } catch (IOException e) {
+                // handle the exception
+            }
+        }
         User user = userSettingsService.createUser(userSettingDto);// Creating the User entity
         return ResponseEntity.ok(userSettingsService.mapEntityToDTO(user));// Returning the created user as a DTO
     }
@@ -60,9 +66,9 @@ public class UserSettingsController {
 
     @PutMapping("/{id}")
     public ResponseEntity<UserSettingDto> updateUser(@PathVariable("id") Long id,
-                                                     @RequestParam("image") MultipartFile image,
+                                                     @RequestParam(defaultValue = "image", required = false , name = "image") MultipartFile image,
                                                      @RequestParam("firstName") String firstName,
-                                                     @RequestParam("lastName") String lastName,
+                                                     @RequestParam(defaultValue = "", required = false, name = "lastName") String lastName,
                                                      @RequestParam("email") String email,
                                                      @RequestParam("addresses") String addresses,
                                                      @RequestParam("mobile") String mobile,
@@ -70,13 +76,19 @@ public class UserSettingsController {
                                                      @RequestParam("country") String country) throws IOException {
         UserSettingDto userSettingDto = new UserSettingDto(); // Creating a UserSettingDto with the received data
         userSettingDto.setFirstName(firstName);
-        userSettingDto.setLastName(lastName != null ? lastName : "");
+        if(lastName != null) userSettingDto.setLastName(lastName);
         userSettingDto.setEmail(email);
         userSettingDto.setAddresses(List.of(addresses));
         userSettingDto.setMobile(mobile);
         userSettingDto.setDate_of_birth(date_of_birth);
         userSettingDto.setCountry(country);
-        userSettingDto.setImage(image);
+        if (image != null) {
+            try {
+                userSettingDto.setImage(java.util.Base64.getEncoder().encodeToString(image.getInputStream().readAllBytes()));
+            } catch (IOException e) {
+                // handle the exception
+            }
+        }
         User user = userSettingsService.updateUser(id, userSettingDto);// Updating the User entity
         return ResponseEntity.ok(userSettingsService.mapEntityToDTO(user));// Returning the updated user as a DTO
     }

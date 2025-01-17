@@ -22,8 +22,8 @@ public class UserSettingDto {
     private String mobile;
     private String role;
     private String country;
-    private String image_url;
-    private MultipartFile image; // For uploading images
+    private String image; // For uploading images
     @DateTimeFormat(pattern = "dd/MM/yyyy")
     private Date date_of_birth;
+    private String password;
 }
