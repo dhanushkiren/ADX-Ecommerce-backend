@@ -1,12 +1,10 @@
 package com.adverpix.ecommerce.controller;
 
-
+import com.adverpix.ecommerce.dto.CartDto;
 import com.adverpix.ecommerce.entity.CartItem;
 import com.adverpix.ecommerce.service.CartService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-
 
 import java.util.List;
 
@@ -21,18 +19,18 @@ public class CartController {
     }
 
     @GetMapping("/{userId}")
-    public ResponseEntity<List<CartItem>> getCartItems(@PathVariable String userId) {
+    public ResponseEntity<List<CartDto>> getCartItems(@PathVariable String userId) {
         return ResponseEntity.ok(cartService.getCartItems(userId));
     }
 
     @PostMapping
-    public ResponseEntity<CartItem> addCartItem(@RequestBody CartItem cartItem) {
-        return ResponseEntity.ok(cartService.addCartItem(cartItem));
+    public ResponseEntity<CartItem> addCartItem(@RequestBody CartDto cartDto) {
+        return ResponseEntity.ok(cartService.addCartItem(cartDto));
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> removeCartItem(@PathVariable Long id) {
-        cartService.removeCartItem(id);
+    @DeleteMapping("/product/{productId}")
+    public ResponseEntity<Void> deleteByProductId(@PathVariable Integer productId) {
+        cartService.deleteByProductId(productId);
         return ResponseEntity.noContent().build();
     }
 
