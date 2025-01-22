@@ -111,5 +111,27 @@ public class UserSettingsController {
         User user = userSettingsService.removeAddress(userId, addressToRemove);
         return ResponseEntity.ok(userSettingsService.mapEntityToDTO(user));
     }
+    ///
 
+    @PutMapping("/{id}/email")
+    public ResponseEntity<UserSettingDto> addEmail(@PathVariable("id") Long userId,
+                                                     @RequestBody String newEmail) {
+        User user = userSettingsService.updateEmail(userId, newEmail);
+        return ResponseEntity.ok(userSettingsService.mapEntityToDTO(user));
+    }
+    @PutMapping("/{id}/number")
+    public ResponseEntity<UserSettingDto> addNumber(@PathVariable("id") Long userId,
+                                                   @RequestBody String newNumber) {
+        User user = userSettingsService.updateNumber(userId, newNumber);
+        return ResponseEntity.ok(userSettingsService.mapEntityToDTO(user));
+    }
+    @PutMapping("/{id}/image")
+    public ResponseEntity<User> updateImage(@PathVariable Long id, @RequestParam("image") MultipartFile image) {
+        try {
+            User user = userSettingsService.updateImage(id, image);
+            return ResponseEntity.ok(user);
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().build();
+        }
+    }
 }

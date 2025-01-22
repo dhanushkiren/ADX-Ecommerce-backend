@@ -5,6 +5,8 @@ import com.adverpix.ecommerce.entity.User;
 import com.adverpix.ecommerce.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
@@ -104,6 +106,44 @@ public class UserSettingsService {
         }
         throw new RuntimeException("User not found with id " + userId);
     }
+    // Add a new email to the user's address list
+    public User updateEmail(Long userId, String newEmail) {
+        Optional<User> optionalUser = userRepository.findById(userId); // Fetch user by ID
+        if (optionalUser.isPresent()) {
+            User user = optionalUser.get(); // Retrieve the user
+            user.setEmail(newEmail); // Updates the email
+            return userRepository.save(user); // Save the updated user entity
+        }
+        throw new RuntimeException("User not found with id " + userId);
+    }
+    public User updateNumber(Long userId, String newNumber) {
+        Optional<User> optionalUser = userRepository.findById(userId); // Fetch user by ID
+        if (optionalUser.isPresent()) {
+            User user = optionalUser.get(); // Retrieve the user
+            user.setMobile(newNumber); // Updates the email
+            return userRepository.save(user); // Save the updated user entity
+        }
+        throw new RuntimeException("User not found with id " + userId);
+    }
+    public User updateImage(Long id, MultipartFile image) {
+        Optional<User> optionalUser = userRepository.findById(id);
+        if (optionalUser.isPresent()) {
+            User user = optionalUser.get();
+            if (image != null) {
+                try {
+                    byte[] imageBytes = image.getBytes();
+                    user.setImageBlob(imageBytes);
+                } catch (IOException e) {
+                    throw new RuntimeException("Error updating image", e);
+                }
+            }
+            return userRepository.save(user);
+        } else {
+            throw new RuntimeException("User not found with id " + id);
+        }
+    }
+
+
     public UserSettingDto mapEntityToDTO(User user) {//Converting the user entity to UserSettingDto to map the data
         UserSettingDto dto = new UserSettingDto();
         dto.setId(user.getId());
