@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.web.bind.annotation.GetMapping;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -37,6 +38,5 @@ public class User {
     private byte[] imageBlob;
     private String role;
     private String Country;
-    @Temporal(TemporalType.DATE)
-    private Date date_of_birth;
+    private LocalDate date_of_birth;
 }

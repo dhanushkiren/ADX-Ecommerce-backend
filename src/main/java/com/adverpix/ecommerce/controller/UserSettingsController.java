@@ -9,6 +9,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.io.IOException;
 import java.util.Date;
 import java.util.List;
@@ -29,8 +31,12 @@ public class UserSettingsController {
                                                      @RequestParam("addresses") String addresses,
                                                      @RequestParam("mobile") String mobile,
                                                      @RequestParam("role") String role,
-                                                     @RequestParam("date_of_birth") Date date_of_birth,
+                                                     @RequestParam("date_of_birth") String date_of_birth,
                                                      @RequestParam("country") String country) throws IOException {
+        //String to LocalDate
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+        LocalDate parsedDateOfBirth = LocalDate.parse(date_of_birth, formatter);
+
         UserSettingDto userSettingDto = new UserSettingDto();// Creating a UserSettingDto with the received data
         userSettingDto.setUsername(username);
         userSettingDto.setFirstName(firstName);
@@ -39,7 +45,7 @@ public class UserSettingsController {
         userSettingDto.setAddresses(List.of(addresses));
         userSettingDto.setMobile(mobile);
         userSettingDto.setRole(role);
-        userSettingDto.setDate_of_birth(date_of_birth);
+        userSettingDto.setDate_of_birth(parsedDateOfBirth);
         userSettingDto.setCountry(country);
         if (image != null) {
             try {
@@ -72,15 +78,18 @@ public class UserSettingsController {
                                                      @RequestParam("email") String email,
                                                      @RequestParam("addresses") String addresses,
                                                      @RequestParam("mobile") String mobile,
-                                                     @RequestParam("date_of_birth")@DateTimeFormat(pattern = "dd/MM/yyyy") Date date_of_birth,
+                                                     @RequestParam("date_of_birth")@DateTimeFormat(pattern = "dd/MM/yyyy") String date_of_birth,
                                                      @RequestParam("country") String country) throws IOException {
+        //String to LocalDate
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+        LocalDate parsedDateOfBirth = LocalDate.parse(date_of_birth, formatter);
         UserSettingDto userSettingDto = new UserSettingDto(); // Creating a UserSettingDto with the received data
         userSettingDto.setFirstName(firstName);
         if(lastName != null) userSettingDto.setLastName(lastName);
         userSettingDto.setEmail(email);
         userSettingDto.setAddresses(List.of(addresses));
         userSettingDto.setMobile(mobile);
-        userSettingDto.setDate_of_birth(date_of_birth);
+        userSettingDto.setDate_of_birth(parsedDateOfBirth);
         userSettingDto.setCountry(country);
         if (image != null) {
             try {
