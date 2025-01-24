@@ -13,20 +13,12 @@ public class CartItem {
     private Long id; // Primary key
 
     @Column(nullable = false)
-    private String userId; 
+    private String userId; // User Identifier
+
+    @ManyToOne
+    @JoinColumn(name = "product_id", nullable = false) // Join column for Product entity
+    private Product product; // Association with Product entity
 
     @Column(nullable = false)
-    private Integer productId;
-
-    @Column(nullable = false)
-    private String productName;
-
-    @Column(nullable = false)
-    private int quantity;
-
-    @Column(nullable = false)
-    private String imageUrl; // Changed from byte[] to String
-
-    @Column(nullable = false)
-    private double price;
+    private int quantity; // Quantity of the product
 }
