@@ -1,7 +1,10 @@
 package com.adverpix.ecommerce.controller;
 
+import com.adverpix.ecommerce.dto.ProductDto;
 import com.adverpix.ecommerce.dto.ProductSummaryDTO;
+import com.adverpix.ecommerce.repository.ProductRepository;
 import com.adverpix.ecommerce.service.FilterService;
+import com.adverpix.ecommerce.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,6 +20,9 @@ public class FilterController {
 
     @Autowired
     private FilterService filterService;
+    @Autowired
+    private ProductService productService;
+
 
     @GetMapping("/filter")
     public ResponseEntity<List<ProductSummaryDTO>> getFilteredProducts(
@@ -39,5 +45,10 @@ public class FilterController {
                 brand, stockAvailable, sortField, ascending, page, size);
 
         return ResponseEntity.ok(products);
+    }
+
+    @GetMapping("/search")
+    public List<ProductDto> searchProducts(@RequestParam String query) {
+        return productService.searchProducts(query);
     }
 }

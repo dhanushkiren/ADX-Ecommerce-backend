@@ -1,5 +1,6 @@
 package com.adverpix.ecommerce.service;// This file is used to handle the business logic
 
+import com.adverpix.ecommerce.dto.ProductDto;
 import com.adverpix.ecommerce.dto.ProductOverviewDTO;
 import com.adverpix.ecommerce.dto.ProductRequestDTO;
 import com.adverpix.ecommerce.dto.ProductSummaryDTO;// This file is used to handle the product summary
@@ -18,6 +19,7 @@ import java.nio.file.Paths; // this file is used to handle the multiple path of 
 import java.util.ArrayList; //This file is used to handle the array
 import java.util.List; // This file is used to handle the list
 import java.util.Objects;// This file is used to handle the object
+import java.util.stream.Collectors;
 
 @Service
 public class ProductService {
@@ -212,6 +214,24 @@ public class ProductService {
 
     public List<ProductOverviewDTO> getAllProducts() {
         return productRepository.findAllProductsWithSellerAndCategory();
+    }
+
+    // product search
+    public List<ProductDto> searchProducts(String query) {
+        List<Product> products = productRepository.searchProducts(query);
+        return products.stream().map(this::convertToDTO).collect(Collectors.toList());
+    }
+
+    private ProductDto convertToDTO(Product product) {
+        ProductDto dto = new ProductDto();
+        dto.setName(product.getName());
+        dto.setRatingCount(product.getRatingCount());
+        dto.setReview(product.getReview());
+        dto.setPrice(product.getPrice());
+        dto.setOfferDetails(product.getOfferDetails());
+        dto.setBrand(product.getBrand());
+        dto.setImageUrl(product.getImageUrl());
+        return dto;
     }
 }
 

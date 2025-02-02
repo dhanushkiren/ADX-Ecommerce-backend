@@ -6,6 +6,7 @@ import com.adverpix.ecommerce.dto.ProductOverviewDTO;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -31,4 +32,9 @@ public interface ProductRepository extends JpaRepository<Product, Integer>, JpaS
                 "JOIN p.seller_id s " +
                 "JOIN p.category_id c")
     List<ProductOverviewDTO> findAllProductsWithSellerAndCategory();
+
+    @Query("SELECT p FROM Product p WHERE LOWER(p.name) LIKE LOWER(CONCAT('%', :query, '%')) " +
+            "OR LOWER(p.description) LIKE LOWER(CONCAT('%', :query, '%')) " +
+            "OR LOWER(p.brand) LIKE LOWER(CONCAT('%', :query, '%'))")
+    List<Product> searchProducts(@Param("query") String query);
 }
