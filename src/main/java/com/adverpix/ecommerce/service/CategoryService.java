@@ -1,5 +1,8 @@
 package com.adverpix.ecommerce.service;
+import com.adverpix.ecommerce.dto.CategoryResponseDto;
+import com.adverpix.ecommerce.dto.CategorySummaryDto;
 import com.adverpix.ecommerce.entity.Seller;
+import com.adverpix.ecommerce.repository.ProductRepository;
 import com.adverpix.ecommerce.repository.SellerRepository;
 import com.adverpix.ecommerce.entity.Category;
 import com.adverpix.ecommerce.repository.CategoryRepository;
@@ -81,5 +84,13 @@ public class CategoryService {
     // Delete category by ID
     public void deleteCategory(int id) {
         categoryRepository.deleteById(id);
+    }
+
+    public List<CategorySummaryDto> getCategorySummaries() {
+        return categoryRepository.getCategorySummaries();
+    }
+
+    public List<CategoryResponseDto> getProductsByCategoryId(int categoryId) {
+        return categoryRepository.findProductsByCategoryId(categoryId);
     }
 }

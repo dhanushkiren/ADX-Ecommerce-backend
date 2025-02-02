@@ -1,6 +1,5 @@
+
 package com.adverpix.ecommerce.entity;
-
-
 
 import jakarta.persistence.*;
 import lombok.Data;
@@ -12,12 +11,27 @@ public class CartItem {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Long id; // Primary key
 
-    private String productName;
-    private int quantity;
-    private double price;
+    @Column(nullable = false)
+    private String userId; 
 
-    private String userId; // To associate cart items with a user
+    @Column(nullable = false)
+    private Integer productId; 
+
+    @Column(nullable = false)
+    private String productName; 
+
+    @Column(nullable = false)
+    private int quantity; 
+
+    @Lob
+    private byte[] image; 
+
+    @Column(nullable = false)
+    private double price; 
 }
+
+
+
 
