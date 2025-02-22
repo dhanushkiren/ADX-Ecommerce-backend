@@ -8,11 +8,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.lang.reflect.Array;
 import java.util.List;
 
 @RestController
-@RequestMapping("api/orders")
+@RequestMapping("/api")
 public class OrderController {
 
     private final OrderService orderService;
@@ -22,7 +21,7 @@ public class OrderController {
         this.orderService = orderService;
     }
 
-    @PostMapping
+    @PostMapping("/orders")
     public ResponseEntity<OrderResponseDto> createOrder(@RequestBody OrderRequestDto orderRequest) {
         OrderResponseDto createdOrder = orderService.createOrder(orderRequest);
         // Check if the created order is null or empty (though ideally it shouldn't be null)
@@ -32,7 +31,7 @@ public class OrderController {
         return ResponseEntity.status(201).body(createdOrder);
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/orders/{id}")
     public ResponseEntity<?> getOrderById(@PathVariable Long id) {
         OrderResponseDto order = orderService.getOrderById(id);
         if(order == null){
@@ -41,7 +40,7 @@ public class OrderController {
         return ResponseEntity.ok(order);
     }
 
-    @GetMapping("/user/{userId}")
+    @GetMapping("/orders/user/{userId}")
     public ResponseEntity<?> getOrdersByUserId(@PathVariable Long userId) {
         List<OrderResponseDto> orders = orderService.getOrdersByUserId(userId);
         if(orders.isEmpty()){
