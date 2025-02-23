@@ -47,13 +47,7 @@ public class UserSettingsController {
         userSettingDto.setRole(role);
         userSettingDto.setDate_of_birth(parsedDateOfBirth);
         userSettingDto.setCountry(country);
-        if (image != null) {
-            try {
-                userSettingDto.setImage(java.util.Base64.getEncoder().encodeToString(image.getInputStream().readAllBytes()));
-            } catch (IOException e) {
-                // handle the exception
-            }
-        }
+        userSettingDto.setImages(List.of(image));
         User user = userSettingsService.createUser(userSettingDto);// Creating the User entity
         return ResponseEntity.ok(userSettingsService.mapEntityToDTO(user));// Returning the created user as a DTO
     }
@@ -91,13 +85,7 @@ public class UserSettingsController {
         userSettingDto.setMobile(mobile);
         userSettingDto.setDate_of_birth(parsedDateOfBirth);
         userSettingDto.setCountry(country);
-        if (image != null) {
-            try {
-                userSettingDto.setImage(java.util.Base64.getEncoder().encodeToString(image.getInputStream().readAllBytes()));
-            } catch (IOException e) {
-                // handle the exception
-            }
-        }
+        userSettingDto.setImages(List.of(image));
         User user = userSettingsService.updateUser(id, userSettingDto);// Updating the User entity
         return ResponseEntity.ok(userSettingsService.mapEntityToDTO(user));// Returning the updated user as a DTO
     }
@@ -134,13 +122,13 @@ public class UserSettingsController {
         User user = userSettingsService.updateNumber(userId, newNumber);
         return ResponseEntity.ok(userSettingsService.mapEntityToDTO(user));
     }
-    @PutMapping("/{id}/image")
-    public ResponseEntity<User> updateImage(@PathVariable Long id, @RequestParam("image") MultipartFile image) {
-        try {
-            User user = userSettingsService.updateImage(id, image);
-            return ResponseEntity.ok(user);
-        } catch (RuntimeException e) {
-            return ResponseEntity.badRequest().build();
-        }
-    }
+//    @PutMapping("/{id}/image")
+//    public ResponseEntity<User> updateImage(@PathVariable Long id, @RequestParam("image") MultipartFile image) {
+//        try {
+//            User user = userSettingsService.updateImage(id, image);
+//            return ResponseEntity.ok(user);
+//        } catch (RuntimeException e) {
+//            return ResponseEntity.badRequest().build();
+//        }
+//    }
 }
