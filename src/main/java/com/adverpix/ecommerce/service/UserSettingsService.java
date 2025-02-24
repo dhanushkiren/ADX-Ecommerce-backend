@@ -8,18 +8,52 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
-import java.util.Base64;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.*;
 
 @Service
 public class UserSettingsService {
 
     @Autowired
     private UserRepository userRepository;
+    private static final String IMAGE_DIRECTORY = "static/uploaded-images/";
+    private static final List<String> ALLOWED_IMAGE_TYPES = List.of(
+            "image/png", "image/jpeg", "image/jpg", "image/webp", "image/heif", "image/heic"
+    );
+    private void validateImageType(MultipartFile file) throws IOException {
+        String mimeType = Files.probeContentType(Paths.get(Objects.requireNonNull(file.getOriginalFilename())));
+        if (!ALLOWED_IMAGE_TYPES.contains(mimeType)) {
+            throw new IllegalArgumentException("Invalid file type. Only PNG, JPEG, JPG, WebP, HEIF, and HEIC are allowed.");
+        }
+    }
+    private List<String> saveImages(List<MultipartFile> images) throws IOException {
+        List<String> imageUrls = new ArrayList<>();
+        for (MultipartFile image : images) {
+            String savedImage = saveImage(image);
+            imageUrls.add(IMAGE_DIRECTORY + savedImage);
+        }
+        return imageUrls;
+    }
+    private String saveImage(MultipartFile image) throws IOException {
+        validateImageType(image);
+        Path directoryPath = Paths.get(IMAGE_DIRECTORY);
+        if (!Files.exists(directoryPath)) {
+            Files.createDirectories(directoryPath);
+        }
+        String fileName = System.currentTimeMillis() + "_" + image.getOriginalFilename();
+        Path filePath = directoryPath.resolve(fileName);
+        Files.copy(image.getInputStream(), filePath);
+        return fileName;
+    }
 
     public User createUser(UserSettingDto userSettingDto) throws IOException {
+        if (userSettingDto.getImages() == null || userSettingDto.getImages().isEmpty()) {
+            throw new IllegalArgumentException("At least one image must be uploaded.");
+        }
+
+        List<String> imageUrls = saveImages(userSettingDto.getImages());
         User user = new User();
         user.setUsername(userSettingDto.getUsername());
         user.setFirstName(userSettingDto.getFirstName());
@@ -30,11 +64,7 @@ public class UserSettingsService {
         user.setRole(userSettingDto.getRole());
         user.setDate_of_birth(userSettingDto.getDate_of_birth());
         user.setCountry(userSettingDto.getCountry());
-        if (userSettingDto.getImage() != null && !userSettingDto.getImage().isEmpty()) {
-            user.setImageBlob(java.util.Base64.getDecoder().decode(userSettingDto.getImage()));
-        } else {
-            user.setImageBlob(null);
-        }
+        user.setImageUrl(String.join(",", imageUrls));
         return userRepository.save(user);
     }
 
@@ -51,10 +81,9 @@ public class UserSettingsService {
             user.setDate_of_birth(userSettingDto.getDate_of_birth());
             user.setCountry(userSettingDto.getCountry());
 
-            if (userSettingDto.getImage() != null) {
-                user.setImageBlob(userSettingDto.getImage().getBytes());
-            } else {
-                user.setImageBlob(null);
+            if (userSettingDto.getImages() != null && !userSettingDto.getImages().isEmpty()) {
+                List<String> newImageUrls = saveImages(userSettingDto.getImages());
+                user.setImageUrl(String.join(",", newImageUrls));
             }
 
             return userRepository.save(user);
@@ -67,7 +96,21 @@ public class UserSettingsService {
         if (!userRepository.existsById(id)) {
             throw new RuntimeException("User not found with id " + id);
         }
+        deleteImages(userRepository.findById(id).get().getImageUrl());
         userRepository.deleteById(id);
+    }
+    private void deleteImages(String imageUrls) {
+        if (imageUrls != null && !imageUrls.isEmpty()) {
+            String[] images = imageUrls.split(",");
+            for (String image : images) {
+                Path imagePath = Paths.get(image);
+                try {
+                    Files.deleteIfExists(imagePath);
+                } catch (IOException e) {
+                    System.err.println("Error deleting image: " + image);
+                }
+            }
+        }
     }
 
     // Method to get all users
@@ -125,23 +168,18 @@ public class UserSettingsService {
         }
         throw new RuntimeException("User not found with id " + userId);
     }
-    public User updateImage(Long id, MultipartFile image) {
-        Optional<User> optionalUser = userRepository.findById(id);
-        if (optionalUser.isPresent()) {
-            User user = optionalUser.get();
-            if (image != null) {
-                try {
-                    byte[] imageBytes = image.getBytes();
-                    user.setImageBlob(imageBytes);
-                } catch (IOException e) {
-                    throw new RuntimeException("Error updating image", e);
-                }
-            }
-            return userRepository.save(user);
-        } else {
-            throw new RuntimeException("User not found with id " + id);
-        }
-    }
+//    public User updateImage(Long id, MultipartFile image) {
+//        Optional<User> optionalUser = userRepository.findById(id);
+//        if (optionalUser.isPresent()) {
+//            if (userSettingDto.getImages() != null && !userSettingDto.getImages().isEmpty()) {
+//                List<String> newImageUrls = saveImages(userSettingDto.getImages());
+//                user.setImageUrl(String.join(",", newImageUrls));
+//            }
+//            return userRepository.save(user);
+//        } else {
+//            throw new RuntimeException("User not found with id " + id);
+//        }
+//    }
 
 
     public UserSettingDto mapEntityToDTO(User user) {//Converting the user entity to UserSettingDto to map the data
@@ -157,10 +195,7 @@ public class UserSettingsService {
         dto.setRole(user.getRole());
         dto.setDate_of_birth(user.getDate_of_birth());
         dto.setCountry(user.getCountry());
-        if (user.getImageBlob() != null) {
-            String base64Image = Base64.getEncoder().encodeToString(user.getImageBlob());
-            dto.setImage(base64Image); // Correctly set Base64 string
-        }
+        dto.setImageUrls(user.getImageUrl());
         return dto;
     }
 
