@@ -6,8 +6,10 @@ import com.adverpix.ecommerce.service.UserSettingsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -15,12 +17,16 @@ import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 
+import static org.apache.commons.lang3.BooleanUtils.or;
+import static org.apache.logging.log4j.ThreadContext.isEmpty;
+
 @RestController
 @RequestMapping("/api/users")
 public class UserSettingsController {
 
     @Autowired
     private UserSettingsService userSettingsService;
+
 
     @PostMapping
     public ResponseEntity<UserSettingDto> createUser(@RequestParam(defaultValue = "image", required = false , name = "image") MultipartFile image,
@@ -70,10 +76,12 @@ public class UserSettingsController {
                                                      @RequestParam("firstName") String firstName,
                                                      @RequestParam(defaultValue = "", required = false, name = "lastName") String lastName,
                                                      @RequestParam("email") String email,
+                                                     @RequestParam(name = "password", required = false) String password,
                                                      @RequestParam("addresses") String addresses,
                                                      @RequestParam("mobile") String mobile,
                                                      @RequestParam("date_of_birth")@DateTimeFormat(pattern = "dd/MM/yyyy") String date_of_birth,
                                                      @RequestParam("country") String country) throws IOException {
+        PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
         //String to LocalDate
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
         LocalDate parsedDateOfBirth = LocalDate.parse(date_of_birth, formatter);
@@ -81,6 +89,10 @@ public class UserSettingsController {
         userSettingDto.setFirstName(firstName);
         if(lastName != null) userSettingDto.setLastName(lastName);
         userSettingDto.setEmail(email);
+        if (password != null && !password.isEmpty()) {
+            String encryptedPassword = passwordEncoder.encode(password);
+            userSettingDto.setPassword(encryptedPassword);
+        }
         userSettingDto.setAddresses(List.of(addresses));
         userSettingDto.setMobile(mobile);
         userSettingDto.setDate_of_birth(parsedDateOfBirth);
