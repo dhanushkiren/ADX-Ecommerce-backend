@@ -24,55 +24,74 @@ public class StripeService {
 
 
     public StripeResponse checkoutProducts(ProductRequest productRequest) {
-        // Set your secret key. Remember to switch to your live secret key in production!
         Stripe.apiKey = secretKey;
 
-        // Create a PaymentIntent with the order amount and currency
-        SessionCreateParams.LineItem.PriceData.ProductData productData =
-                SessionCreateParams.LineItem.PriceData.ProductData.builder()
-                        .setName(productRequest.getName())
-                        .build();
-
-        // Create new line item with the above product data and associated price
-        SessionCreateParams.LineItem.PriceData priceData =
-                SessionCreateParams.LineItem.PriceData.builder()
-                        .setCurrency(productRequest.getCurrency() != null ? productRequest.getCurrency() : "USD")
-                        .setUnitAmount(productRequest.getAmount())
-                        .setProductData(productData)
-                        .build();
-
-        // Create new line item with the above price data
-        SessionCreateParams.LineItem lineItem =
-                SessionCreateParams
-                        .LineItem.builder()
-                        .setQuantity(productRequest.getQuantity())
-                        .setPriceData(priceData)
-                        .build();
-
-        // Create new session with the line items
-        SessionCreateParams params =
-                SessionCreateParams.builder()
-                        .setMode(SessionCreateParams.Mode.PAYMENT)
-                        .setSuccessUrl("http://localhost:8080/api/payment/success")
-                        .setCancelUrl("http://localhost:8080/api/payment/cancel")
-                        .addLineItem(lineItem)
-                        .build();
-
-        // Create new session
-        Session session = null;
         try {
-            session = Session.create(params);
-        } catch (StripeException e) {
-            //log the error
-        }
+            // Create product data
+            SessionCreateParams.LineItem.PriceData.ProductData productData =
+                    SessionCreateParams.LineItem.PriceData.ProductData.builder()
+                            .setName(productRequest.getName())
+                            .build();
 
-        return StripeResponse
-                .builder()
-                .status("SUCCESS")
-                .message("Payment session created ")
-                .sessionId(session.getId())
-                .sessionUrl(session.getUrl())
-                .build();
+            // Create price data
+            SessionCreateParams.LineItem.PriceData priceData =
+                    SessionCreateParams.LineItem.PriceData.builder()
+                            .setCurrency(productRequest.getCurrency() != null ? productRequest.getCurrency() : "USD")
+                            .setUnitAmount(productRequest.getAmount())
+                            .setProductData(productData)
+                            .build();
+
+            // Create line item
+            SessionCreateParams.LineItem lineItem =
+                    SessionCreateParams
+                            .LineItem.builder()
+                            .setQuantity(productRequest.getQuantity())
+                            .setPriceData(priceData)
+                            .build();
+
+            // Create session parameters
+            SessionCreateParams params =
+                    SessionCreateParams.builder()
+                            .setMode(SessionCreateParams.Mode.PAYMENT)
+                            .setSuccessUrl("http://localhost:8080/api/payment/success")
+                            .setCancelUrl("http://localhost:8080/api/payment/cancel")
+                            .addLineItem(lineItem)
+                            .build();
+
+            // Create Stripe session
+            Session session = Session.create(params);
+
+            // Ensure session is not null
+            if (session == null) {
+                throw new RuntimeException("Stripe session creation failed: received null session");
+            }
+
+            return StripeResponse
+                    .builder()
+                    .status("SUCCESS")
+                    .message("Payment session created")
+                    .sessionId(session.getId())
+                    .sessionUrl(session.getUrl())
+                    .build();
+
+        } catch (StripeException e) {
+            return StripeResponse
+                    .builder()
+                    .status("FAILED")
+                    .message("Error creating Stripe session: " + e.getMessage())
+                    .sessionId(null)
+                    .sessionUrl(null)
+                    .build();
+        } catch (RuntimeException e) {
+            return StripeResponse
+                    .builder()
+                    .status("FAILED")
+                    .message(e.getMessage())
+                    .sessionId(null)
+                    .sessionUrl(null)
+                    .build();
+        }
     }
+
 
 }
