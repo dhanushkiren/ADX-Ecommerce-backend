@@ -59,6 +59,7 @@ public class UserSettingsService {
         user.setFirstName(userSettingDto.getFirstName());
         user.setLastName(userSettingDto.getLastName() != null ? userSettingDto.getLastName() : "");
         user.setEmail(userSettingDto.getEmail());
+        user.setPassword(userSettingDto.getPassword());
         user.setAddresses(userSettingDto.getAddresses());
         user.setMobile(userSettingDto.getMobile());
         user.setRole(userSettingDto.getRole());
@@ -77,7 +78,7 @@ public class UserSettingsService {
             user.setEmail(userSettingDto.getEmail());
             user.setAddresses(userSettingDto.getAddresses() != null ? userSettingDto.getAddresses() : user.getAddresses());
             user.setMobile(userSettingDto.getMobile());
-            user.setPassword(userSettingDto.getPassword());
+            user.setPassword(userSettingDto.getPassword() != null ? userSettingDto.getPassword() : user.getPassword());
             user.setDate_of_birth(userSettingDto.getDate_of_birth());
             user.setCountry(userSettingDto.getCountry());
 

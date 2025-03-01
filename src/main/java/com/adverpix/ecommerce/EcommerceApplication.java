@@ -9,7 +9,8 @@ import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfi
 import jakarta.annotation.PostConstruct;
 
 @SpringBootApplication(exclude = {SecurityAutoConfiguration.class})
-public class EcommerceApplication {
+public class
+EcommerceApplication {
 
 	@Autowired
 	private TwilioConfig twilioConfig;
