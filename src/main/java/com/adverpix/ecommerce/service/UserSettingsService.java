@@ -57,7 +57,7 @@ public class UserSettingsService {
         User user = new User();
         user.setUsername(userSettingDto.getUsername());
         user.setFirstName(userSettingDto.getFirstName());
-        user.setLastName(userSettingDto.getLastName() != null ? userSettingDto.getLastName() : "");
+        user.setLastName(userSettingDto.getLastName() != null ? userSettingDto.getLastName() : user.getLastName());
         user.setEmail(userSettingDto.getEmail());
         user.setPassword(userSettingDto.getPassword());
         user.setAddresses(userSettingDto.getAddresses());
@@ -73,14 +73,14 @@ public class UserSettingsService {
         Optional<User> optionalUser = userRepository.findById(id);
         if (optionalUser.isPresent()) {
             User user = optionalUser.get();
-            user.setFirstName(userSettingDto.getFirstName());
-            user.setLastName(userSettingDto.getLastName() != null ? userSettingDto.getLastName() : null);
-            user.setEmail(userSettingDto.getEmail());
+            user.setFirstName(userSettingDto.getFirstName() != null ? userSettingDto.getFirstName() : user.getFirstName());
+            user.setLastName(userSettingDto.getLastName() != null ? userSettingDto.getLastName() : user.getLastName());
+            user.setEmail(userSettingDto.getEmail() != null ? userSettingDto.getEmail() : user.getEmail());
             user.setAddresses(userSettingDto.getAddresses() != null ? userSettingDto.getAddresses() : user.getAddresses());
-            user.setMobile(userSettingDto.getMobile());
+            user.setMobile(userSettingDto.getMobile() != null ? userSettingDto.getMobile() : user.getMobile());
             user.setPassword(userSettingDto.getPassword() != null ? userSettingDto.getPassword() : user.getPassword());
-            user.setDate_of_birth(userSettingDto.getDate_of_birth());
-            user.setCountry(userSettingDto.getCountry());
+            user.setDate_of_birth(userSettingDto.getDate_of_birth() != null ? userSettingDto.getDate_of_birth() : user.getDate_of_birth());
+            user.setCountry(userSettingDto.getCountry() != null ? userSettingDto.getCountry() : user.getCountry());
 
             if (userSettingDto.getImages() != null && !userSettingDto.getImages().isEmpty()) {
                 List<String> newImageUrls = saveImages(userSettingDto.getImages());

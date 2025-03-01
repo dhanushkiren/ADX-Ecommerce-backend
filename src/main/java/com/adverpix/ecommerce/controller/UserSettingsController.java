@@ -71,33 +71,38 @@ public class UserSettingsController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<UserSettingDto> updateUser(@PathVariable("id") Long id,
-                                                     @RequestParam(defaultValue = "image", required = false , name = "image") MultipartFile image,
-                                                     @RequestParam("firstName") String firstName,
-                                                     @RequestParam(defaultValue = "", required = false, name = "lastName") String lastName,
-                                                     @RequestParam("email") String email,
-                                                     @RequestParam(name = "password", required = false) String password,
-                                                     @RequestParam("addresses") String addresses,
-                                                     @RequestParam("mobile") String mobile,
-                                                     @RequestParam("date_of_birth")@DateTimeFormat(pattern = "dd/MM/yyyy") String date_of_birth,
-                                                     @RequestParam("country") String country) throws IOException {
+    public ResponseEntity<UserSettingDto> updateUser(
+                                                     @PathVariable("id") Long id,
+                                                     @RequestParam(name = "image") MultipartFile image,
+                                                     @RequestParam(name = "firstName") String firstName,
+                                                     @RequestParam(name = "lastName") String lastName,
+                                                     @RequestParam(name = "email") String email,
+                                                     @RequestParam(name = "password") String password,
+                                                     @RequestParam(name = "addresses") String addresses,
+                                                     @RequestParam(name = "mobile") String mobile,
+                                                     @RequestParam(name = "date_of_birth") @DateTimeFormat(pattern = "dd/MM/yyyy") String date_of_birth,
+                                                     @RequestParam(name = "country") String country) throws IOException {
         PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
         //String to LocalDate
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-        LocalDate parsedDateOfBirth = LocalDate.parse(date_of_birth, formatter);
         UserSettingDto userSettingDto = new UserSettingDto(); // Creating a UserSettingDto with the received data
-        userSettingDto.setFirstName(firstName);
-        if(lastName != null) userSettingDto.setLastName(lastName);
-        userSettingDto.setEmail(email);
+        if (firstName != null && !firstName.isEmpty()) {
+            userSettingDto.setFirstName(firstName);
+        }
+        if(lastName != null && !lastName.isEmpty()) userSettingDto.setLastName(lastName);
+        if(email != null && !email.isEmpty())userSettingDto.setEmail(email);
         if (password != null && !password.isEmpty()) {
             String encryptedPassword = passwordEncoder.encode(password);
             userSettingDto.setPassword(encryptedPassword);
         }
-        userSettingDto.setAddresses(List.of(addresses));
-        userSettingDto.setMobile(mobile);
-        userSettingDto.setDate_of_birth(parsedDateOfBirth);
-        userSettingDto.setCountry(country);
-        userSettingDto.setImages(List.of(image));
+        if (addresses != null && !addresses.isEmpty())userSettingDto.setAddresses(List.of(addresses));
+        if (mobile != null && !mobile.isEmpty())userSettingDto.setMobile(mobile);
+        if (date_of_birth != null && !date_of_birth.isEmpty()) {
+            LocalDate parsedDateOfBirth = LocalDate.parse(date_of_birth, formatter);
+            userSettingDto.setDate_of_birth(parsedDateOfBirth);
+        }
+        if (country != null && !country.isEmpty())userSettingDto.setCountry(country);
+        if (image != null && !image.isEmpty())userSettingDto.setImages(List.of(image));
         User user = userSettingsService.updateUser(id, userSettingDto);// Updating the User entity
         return ResponseEntity.ok(userSettingsService.mapEntityToDTO(user));// Returning the updated user as a DTO
     }
