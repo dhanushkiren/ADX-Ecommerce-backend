@@ -30,18 +30,18 @@ public class UserSettingsController {
 
     @PostMapping
     public ResponseEntity<UserSettingDto> createUser(@RequestParam(defaultValue = "image", required = false , name = "image") MultipartFile image,
-                                                     @RequestParam("username") String username,
-                                                     @RequestParam("firstName") String firstName,
+                                                     @RequestParam(value = "username", required = false) String username,
+                                                     @RequestParam(name ="firstName", required = false) String firstName,
                                                      @RequestParam(defaultValue = "", required = false, name = "lastName") String lastName,
-                                                     @RequestParam("email") String email,
-                                                     @RequestParam("addresses") String addresses,
-                                                     @RequestParam("mobile") String mobile,
-                                                     @RequestParam("role") String role,
-                                                     @RequestParam("date_of_birth") String date_of_birth,
-                                                     @RequestParam("country") String country) throws IOException {
-        //String to LocalDate
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-        LocalDate parsedDateOfBirth = LocalDate.parse(date_of_birth, formatter);
+                                                     @RequestParam(value = "email", required = false) String email,
+                                                     @RequestParam(value = "addresses", required = false) String addresses,
+                                                     @RequestParam(value = "mobile",required = false) String mobile,
+                                                     @RequestParam(value = "role", required = false) String role,
+                                                     @RequestParam(value = "date_of_birth", required = false) String date_of_birth,
+                                                     @RequestParam(value = "country", required = false) String country) throws IOException {
+//        //String to LocalDate
+//        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+//        LocalDate parsedDateOfBirth = LocalDate.parse(date_of_birth, formatter);
 
         UserSettingDto userSettingDto = new UserSettingDto();// Creating a UserSettingDto with the received data
         userSettingDto.setUsername(username);
@@ -51,7 +51,7 @@ public class UserSettingsController {
         userSettingDto.setAddresses(List.of(addresses));
         userSettingDto.setMobile(mobile);
         userSettingDto.setRole(role);
-        userSettingDto.setDate_of_birth(parsedDateOfBirth);
+        userSettingDto.setDate_of_birth(date_of_birth);
         userSettingDto.setCountry(country);
         userSettingDto.setImages(List.of(image));
         User user = userSettingsService.createUser(userSettingDto);// Creating the User entity
@@ -73,14 +73,14 @@ public class UserSettingsController {
     @PutMapping("/{id}")
     public ResponseEntity<UserSettingDto> updateUser(
                                                      @PathVariable("id") Long id,
-                                                     @RequestParam(name = "image") MultipartFile image,
+                                                     @RequestPart(value = "image", required = false) MultipartFile image,
                                                      @RequestParam(name = "firstName") String firstName,
                                                      @RequestParam(name = "lastName") String lastName,
                                                      @RequestParam(name = "email") String email,
                                                      @RequestParam(name = "password") String password,
                                                      @RequestParam(name = "addresses") String addresses,
                                                      @RequestParam(name = "mobile") String mobile,
-                                                     @RequestParam(name = "date_of_birth") @DateTimeFormat(pattern = "dd/MM/yyyy") String date_of_birth,
+                                                     @RequestParam(name = "date_of_birth") String date_of_birth,
                                                      @RequestParam(name = "country") String country) throws IOException {
         PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
         //String to LocalDate
@@ -97,10 +97,7 @@ public class UserSettingsController {
         }
         if (addresses != null && !addresses.isEmpty())userSettingDto.setAddresses(List.of(addresses));
         if (mobile != null && !mobile.isEmpty())userSettingDto.setMobile(mobile);
-        if (date_of_birth != null && !date_of_birth.isEmpty()) {
-            LocalDate parsedDateOfBirth = LocalDate.parse(date_of_birth, formatter);
-            userSettingDto.setDate_of_birth(parsedDateOfBirth);
-        }
+        if (date_of_birth != null && !date_of_birth.isEmpty()) userSettingDto.setDate_of_birth(date_of_birth);
         if (country != null && !country.isEmpty())userSettingDto.setCountry(country);
         if (image != null && !image.isEmpty())userSettingDto.setImages(List.of(image));
         User user = userSettingsService.updateUser(id, userSettingDto);// Updating the User entity

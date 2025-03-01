@@ -36,5 +36,5 @@ public class User {
     private String imageUrl;
     private String role;
     private String Country;
-    private LocalDate date_of_birth;
+    private String date_of_birth;
 }

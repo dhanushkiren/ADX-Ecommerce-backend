@@ -25,7 +25,7 @@ public class UserSettingDto {
     private String country;
     private List<MultipartFile> images;
     @DateTimeFormat(pattern = "dd/MM/yyyy")
-    private LocalDate  date_of_birth;
+    private String  date_of_birth;
     private String password;
     private String imageUrls;
 }
