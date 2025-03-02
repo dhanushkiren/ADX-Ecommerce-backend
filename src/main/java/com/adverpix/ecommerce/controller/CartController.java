@@ -25,8 +25,9 @@ public class CartController {
         return ResponseEntity.ok(cartService.getCartItems(userId));
     }
 
-    @PostMapping
-    public ResponseEntity<CartItem> addCartItem(@RequestBody CartItem cartItem) {
+    @PostMapping("/{userId}")
+    public ResponseEntity<CartItem> addCartItem(@PathVariable String userId, @RequestBody CartItem cartItem) {
+        cartItem.setUserId(userId); // Associate userId with the cart item
         return ResponseEntity.ok(cartService.addCartItem(cartItem));
     }
 
