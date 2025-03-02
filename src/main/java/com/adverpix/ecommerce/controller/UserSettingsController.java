@@ -29,33 +29,32 @@ public class UserSettingsController {
 
 
     @PostMapping
-    public ResponseEntity<UserSettingDto> createUser(@RequestParam(defaultValue = "image", required = false , name = "image") MultipartFile image,
-                                                     @RequestParam(value = "username", required = false) String username,
-                                                     @RequestParam(name ="firstName", required = false) String firstName,
-                                                     @RequestParam(defaultValue = "", required = false, name = "lastName") String lastName,
-                                                     @RequestParam(value = "email", required = false) String email,
-                                                     @RequestParam(value = "addresses", required = false) String addresses,
-                                                     @RequestParam(value = "mobile",required = false) String mobile,
-                                                     @RequestParam(value = "role", required = false) String role,
-                                                     @RequestParam(value = "date_of_birth", required = false) String date_of_birth,
-                                                     @RequestParam(value = "country", required = false) String country) throws IOException {
-//        //String to LocalDate
-//        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-//        LocalDate parsedDateOfBirth = LocalDate.parse(date_of_birth, formatter);
-
-        UserSettingDto userSettingDto = new UserSettingDto();// Creating a UserSettingDto with the received data
+    public ResponseEntity<UserSettingDto> createUser(
+            @RequestParam(defaultValue = "image", required = false , name = "image") MultipartFile image,
+            @RequestParam(value = "username", required = false) String username,
+            @RequestParam(name ="firstName", required = false) String firstName,
+            @RequestParam(defaultValue = "", required = false, name = "lastName") String lastName,
+            @RequestParam(value = "email", required = false) String email,
+            @RequestParam(value = "addresses", required = false) List<String> addresses,
+            @RequestParam(value = "mobile",required = false) String mobile,
+            @RequestParam(value = "role", required = false) String role,
+            @RequestParam(value = "date_of_birth", required = false) String date_of_birth,
+            @RequestParam(value = "country", required = false) String country
+    ) throws IOException {
+        UserSettingDto userSettingDto = new UserSettingDto();
         userSettingDto.setUsername(username);
         userSettingDto.setFirstName(firstName);
         if(lastName != null) userSettingDto.setLastName(lastName);
         userSettingDto.setEmail(email);
-        userSettingDto.setAddresses(List.of(addresses));
+        userSettingDto.setAddresses(addresses);  // ✅ Now it's directly a list!
         userSettingDto.setMobile(mobile);
         userSettingDto.setRole(role);
         userSettingDto.setDate_of_birth(date_of_birth);
         userSettingDto.setCountry(country);
         userSettingDto.setImages(List.of(image));
-        User user = userSettingsService.createUser(userSettingDto);// Creating the User entity
-        return ResponseEntity.ok(userSettingsService.mapEntityToDTO(user));// Returning the created user as a DTO
+
+        User user = userSettingsService.createUser(userSettingDto);
+        return ResponseEntity.ok(userSettingsService.mapEntityToDTO(user));
     }
 
     @GetMapping
@@ -72,20 +71,20 @@ public class UserSettingsController {
 
     @PutMapping("/{id}")
     public ResponseEntity<UserSettingDto> updateUser(
-                                                     @PathVariable("id") Long id,
-                                                     @RequestPart(value = "image", required = false) MultipartFile image,
-                                                     @RequestParam(name = "firstName") String firstName,
-                                                     @RequestParam(name = "lastName") String lastName,
-                                                     @RequestParam(name = "email") String email,
-                                                     @RequestParam(name = "password") String password,
-                                                     @RequestParam(name = "addresses") String addresses,
-                                                     @RequestParam(name = "mobile") String mobile,
-                                                     @RequestParam(name = "date_of_birth") String date_of_birth,
-                                                     @RequestParam(name = "country") String country) throws IOException {
+            @PathVariable("id") Long id,
+            @RequestPart(value = "image", required = false) MultipartFile image,
+            @RequestParam(name = "firstName") String firstName,
+            @RequestParam(name = "lastName") String lastName,
+            @RequestParam(name = "email") String email,
+            @RequestParam(name = "password") String password,
+            @RequestParam(name = "addresses") List<String> addresses,
+            @RequestParam(name = "mobile") String mobile,
+            @RequestParam(name = "date_of_birth") String date_of_birth,
+            @RequestParam(name = "country") String country
+    ) throws IOException {
         PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
-        //String to LocalDate
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-        UserSettingDto userSettingDto = new UserSettingDto(); // Creating a UserSettingDto with the received data
+        UserSettingDto userSettingDto = new UserSettingDto();
+
         if (firstName != null && !firstName.isEmpty()) {
             userSettingDto.setFirstName(firstName);
         }
@@ -95,13 +94,14 @@ public class UserSettingsController {
             String encryptedPassword = passwordEncoder.encode(password);
             userSettingDto.setPassword(encryptedPassword);
         }
-        if (addresses != null && !addresses.isEmpty())userSettingDto.setAddresses(List.of(addresses));
+        if (addresses != null && !addresses.isEmpty()) userSettingDto.setAddresses(addresses);
         if (mobile != null && !mobile.isEmpty())userSettingDto.setMobile(mobile);
         if (date_of_birth != null && !date_of_birth.isEmpty()) userSettingDto.setDate_of_birth(date_of_birth);
         if (country != null && !country.isEmpty())userSettingDto.setCountry(country);
         if (image != null && !image.isEmpty())userSettingDto.setImages(List.of(image));
-        User user = userSettingsService.updateUser(id, userSettingDto);// Updating the User entity
-        return ResponseEntity.ok(userSettingsService.mapEntityToDTO(user));// Returning the updated user as a DTO
+
+        User user = userSettingsService.updateUser(id, userSettingDto);
+        return ResponseEntity.ok(userSettingsService.mapEntityToDTO(user));
     }
 
     @DeleteMapping("/{id}")
@@ -126,13 +126,13 @@ public class UserSettingsController {
 
     @PutMapping("/{id}/email")
     public ResponseEntity<UserSettingDto> addEmail(@PathVariable("id") Long userId,
-                                                     @RequestBody String newEmail) {
+                                                   @RequestBody String newEmail) {
         User user = userSettingsService.updateEmail(userId, newEmail);
         return ResponseEntity.ok(userSettingsService.mapEntityToDTO(user));
     }
     @PutMapping("/{id}/number")
     public ResponseEntity<UserSettingDto> addNumber(@PathVariable("id") Long userId,
-                                                   @RequestBody String newNumber) {
+                                                    @RequestBody String newNumber) {
         User user = userSettingsService.updateNumber(userId, newNumber);
         return ResponseEntity.ok(userSettingsService.mapEntityToDTO(user));
     }

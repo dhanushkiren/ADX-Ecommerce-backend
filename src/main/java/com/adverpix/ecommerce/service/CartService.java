@@ -31,4 +31,12 @@ public class CartService {
         List<CartItem> items = cartItemRepository.findByUserId(userId);
         cartItemRepository.deleteAll(items);
     }
+
+    public CartItem updateCartItem(String userId, Long itemId, CartItem updatedCartItem) {
+        return cartItemRepository.findByUserIdAndId(userId, itemId)
+                .map(existingItem -> {
+                    existingItem.setQuantity(updatedCartItem.getQuantity());
+                    return cartItemRepository.save(existingItem);
+                }).orElseThrow(() -> new RuntimeException("Cart item not found for the given user"));
+    }
 }
