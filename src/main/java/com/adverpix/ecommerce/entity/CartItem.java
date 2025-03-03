@@ -25,8 +25,7 @@ public class CartItem {
     @Column(nullable = false)
     private int quantity; 
 
-    @Lob
-    private byte[] image; 
+    private String image;
 
     @Column(nullable = false)
     private double price; 
