@@ -7,5 +7,5 @@ import java.util.List;
 @Data
 public class OrderRequestDto {
     private Long userId;
-    private List<OrderItemDto> orderItems;
+    private List<Long> cartItemIds; // <- IDs of selected CartItems to move
 }
