@@ -53,8 +53,8 @@ public class StripeService {
             SessionCreateParams params =
                     SessionCreateParams.builder()
                             .setMode(SessionCreateParams.Mode.PAYMENT)
-                            .setSuccessUrl("http://192.168.1.2:8081/payment-success")
-                            .setCancelUrl("http://192.168.1.2:8081/payment-failed")
+                            .setSuccessUrl("http://192.168.3.150:8080/payment-success")
+                            .setCancelUrl("http://192.168.3.150:8080/payment-failed")
                             .addLineItem(lineItem)
                             .build();
 
