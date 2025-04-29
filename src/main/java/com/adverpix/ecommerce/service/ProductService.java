@@ -1,24 +1,24 @@
-package com.adverpix.ecommerce.service;// This file is used to handle the business logic
+package com.adverpix.ecommerce.service;
 
 import com.adverpix.ecommerce.dto.ProductDto;
 import com.adverpix.ecommerce.dto.ProductOverviewDTO;
 import com.adverpix.ecommerce.dto.ProductRequestDTO;
-import com.adverpix.ecommerce.dto.ProductSummaryDTO;// This file is used to handle the product summary
+import com.adverpix.ecommerce.dto.ProductSummaryDTO;
 import com.adverpix.ecommerce.entity.Product;
 import com.adverpix.ecommerce.repository.ProductRepository;
 import com.adverpix.ecommerce.repository.CategoryRepository;
 import com.adverpix.ecommerce.repository.SellerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;// This file is used to handle the business logic
-import org.springframework.web.multipart.MultipartFile;//This file is used to upload images
+import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;// used to handle the input and output of data
-import java.nio.file.Files; //This file is used to handle the file system
-import java.nio.file.Path; // This file is used to handle the single path
-import java.nio.file.Paths; // this file is used to handle the multiple path of the files
-import java.util.ArrayList; //This file is used to handle the array
-import java.util.List; // This file is used to handle the list
-import java.util.Objects;// This file is used to handle the object
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
@@ -47,9 +47,6 @@ public class ProductService {
         return productRepository.findProductSummaryById(id);
     }
 
-    /**
-     * Validates the image type.
-     */
     private void validateImageType(MultipartFile file) throws IOException {
         String mimeType = Files.probeContentType(Paths.get(Objects.requireNonNull(file.getOriginalFilename())));
         if (!ALLOWED_IMAGE_TYPES.contains(mimeType)) {
@@ -57,9 +54,6 @@ public class ProductService {
         }
     }
 
-    /**
-     * Saves a single image and returns its file name.
-     */
     private String saveImage(MultipartFile image) throws IOException {
         validateImageType(image);
         Path directoryPath = Paths.get(IMAGE_DIRECTORY);
@@ -72,9 +66,6 @@ public class ProductService {
         return fileName;
     }
 
-    /**
-     * Saves multiple images and returns their URLs.
-     */
     private List<String> saveImages(List<MultipartFile> images) throws IOException {
         if (images.size() > MAX_IMAGES) {
             throw new IllegalArgumentException("Cannot upload more than " + MAX_IMAGES + " images.");
@@ -88,9 +79,6 @@ public class ProductService {
         return imageUrls;
     }
 
-    /**
-     * Converts a Product entity to a ProductSummaryDTO.
-     */
     private ProductSummaryDTO convertToResponseDTO(Product product) {
         ProductSummaryDTO responseDTO = new ProductSummaryDTO();
         responseDTO.setId(product.getId());
@@ -105,9 +93,6 @@ public class ProductService {
         return responseDTO;
     }
 
-    /**
-     * Creates a new product.
-     */
     public ProductSummaryDTO addProduct(ProductRequestDTO requestDTO) throws IOException {
         if (requestDTO.getImages() == null || requestDTO.getImages().isEmpty()) {
             throw new IllegalArgumentException("At least one image must be uploaded.");
@@ -123,7 +108,6 @@ public class ProductService {
         product.setRatingCount(requestDTO.getRatingCount());
         product.setImageUrl(String.join(",", imageUrls));
 
-        // Validate category and seller
         if (!categoryRepository.existsById(requestDTO.getCategoryId()) || !sellerRepository.existsById(requestDTO.getSellerId())) {
             throw new IllegalArgumentException("Invalid category or seller.");
         }
@@ -131,22 +115,37 @@ public class ProductService {
         product.setCategory_id(categoryRepository.findById(requestDTO.getCategoryId()).get());
         product.setSeller_id(sellerRepository.findById(requestDTO.getSellerId()).get());
 
+        // ✅ Updated line
+        String categoryName = product.getCategory_id().getName().toLowerCase();
+        switch (categoryName) {
+            case "androidmobile":
+            case "iosmobile":
+                product.setProcessor(requestDTO.getProcessor());
+                product.setRam(requestDTO.getRam());
+                product.setStorage(requestDTO.getStorage());
+                break;
+            case "clothes":
+                product.setFabric(requestDTO.getFabric());
+                product.setFit(requestDTO.getFit());
+                product.setPattern(requestDTO.getPattern());
+                break;
+            case "shoes":
+                product.setMaterial(requestDTO.getMaterial());
+                product.setClosureType(requestDTO.getClosureType());
+                product.setSoleMaterial(requestDTO.getSoleMaterial());
+                break;
+        }
+
         Product savedProduct = productRepository.save(product);
         return convertToResponseDTO(savedProduct);
     }
 
-    /**
-     * Retrieves a product by ID.
-     */
     public ProductSummaryDTO getProductById(int id) {
         Product product = productRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Product not found with ID: " + id));
         return convertToResponseDTO(product);
     }
 
-    /**
-     * Updates product details.
-     */
     public ProductSummaryDTO updateProduct(int id, ProductRequestDTO requestDTO) throws IOException {
         Product existingProduct = productRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Product not found with ID: " + id));
@@ -169,13 +168,31 @@ public class ProductService {
         existingProduct.setCategory_id(categoryRepository.findById(requestDTO.getCategoryId()).get());
         existingProduct.setSeller_id(sellerRepository.findById(requestDTO.getSellerId()).get());
 
+        // ✅ Updated line
+        String categoryName = existingProduct.getCategory_id().getName().toLowerCase();
+        switch (categoryName) {
+            case "androidmobile":
+            case "iosmobile":
+                existingProduct.setProcessor(requestDTO.getProcessor());
+                existingProduct.setRam(requestDTO.getRam());
+                existingProduct.setStorage(requestDTO.getStorage());
+                break;
+            case "clothes":
+                existingProduct.setFabric(requestDTO.getFabric());
+                existingProduct.setFit(requestDTO.getFit());
+                existingProduct.setPattern(requestDTO.getPattern());
+                break;
+            case "shoes":
+                existingProduct.setMaterial(requestDTO.getMaterial());
+                existingProduct.setClosureType(requestDTO.getClosureType());
+                existingProduct.setSoleMaterial(requestDTO.getSoleMaterial());
+                break;
+        }
+
         Product updatedProduct = productRepository.save(existingProduct);
         return convertToResponseDTO(updatedProduct);
     }
 
-    /**
-     * Deletes a product.
-     */
     public void deleteProduct(int id) {
         Product product = productRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Product not found with ID: " + id));
@@ -183,9 +200,6 @@ public class ProductService {
         productRepository.deleteById(id);
     }
 
-    /**
-     * Deletes associated images.
-     */
     private void deleteImages(String imageUrls) {
         if (imageUrls != null && !imageUrls.isEmpty()) {
             String[] images = imageUrls.split(",");
@@ -200,23 +214,10 @@ public class ProductService {
         }
     }
 
-    /**
-     * Retrieves all products.
-     */
-//    public List<ProductSummaryDTO> getAllProducts() {
-//        List<Product> products = (List<Product>) productRepository.findAll();
-//        List<ProductSummaryDTO> responseDTOs = new ArrayList<>();
-//        for (Product product : products) {
-//            responseDTOs.add(convertToResponseDTO(product));
-//        }
-//        return responseDTOs;
-//    }
-
     public List<ProductOverviewDTO> getAllProducts() {
         return productRepository.findAllProductsWithSellerAndCategory();
     }
 
-    // product search
     public List<ProductDto> searchProducts(String query) {
         List<Product> products = productRepository.searchProducts(query);
         return products.stream().map(this::convertToDTO).collect(Collectors.toList());
@@ -234,5 +235,3 @@ public class ProductService {
         return dto;
     }
 }
-
-
