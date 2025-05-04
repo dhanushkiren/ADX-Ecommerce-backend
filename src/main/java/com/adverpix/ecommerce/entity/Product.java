@@ -27,6 +27,21 @@ public class Product {
     private double rating;
     private boolean availability;
 
+    // Android & iOS Mobile variants
+    private String processor;
+    private String ram;
+    private String storage;
+
+    // Clothes variants
+    private String fabric;
+    private String fit;
+    private String pattern;
+
+    // Shoes variants
+    private String material;
+    private String closureType;
+    private String soleMaterial;
+
     @ManyToOne
     @JoinColumn(name = "category_id")
     private Category category_id;

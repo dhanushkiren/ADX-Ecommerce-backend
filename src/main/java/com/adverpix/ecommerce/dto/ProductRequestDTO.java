@@ -19,4 +19,19 @@ public class ProductRequestDTO {
     private int categoryId;
     private int sellerId;
     private List<MultipartFile> images;
+
+    // Mobile-specific fields
+    private String processor;
+    private String ram;
+    private String storage;
+
+    // Clothes-specific fields
+    private String fabric;
+    private String fit;
+    private String pattern;
+
+    // Shoes-specific fields
+    private String material;
+    private String closureType;
+    private String soleMaterial;
 }
